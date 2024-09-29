@@ -7,7 +7,7 @@
 | 16.30 pm | 410855059 Levina & 410856057 Shanyu | Create use case diagram |
 | 18.30 pm | 410855059 Levina | Design app wireframe (low fidelity) tablet format |
 
-**26 September 2024**
+**28 September 2024**
 | Time | Name | Explanation |
 |---|---|---|
-|  |  |  |
+| 19.00 pm | 410855059 Levina  | App name is decided=**Pulse** ; Design app logo and icon |
