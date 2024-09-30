@@ -11,3 +11,8 @@
 | Time | Name | Explanation |
 |---|---|---|
 | 19.00 pm | 410855059 Levina  | App name is decided=**Pulse** ; Design app logo and icon |
+
+**30 September 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 21.40 pm | 410855059 Levina & 410856057 Shanyu | Create flowchart & activity diagram |
