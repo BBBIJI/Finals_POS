@@ -27,3 +27,20 @@
 |---|---|---|
 | 19.00 pm | 410855059 Levina | Wireframe finished ; Start design UI/UX prototype based on wireframe |
 
+**5 October 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 18.30 - 20:00 | 410856057 Tan Shan Yu & 410855315 Kenny | ERD diagram created |
+Summary: 
+ERD (added):
+- Order
+- Product
+- Storage
+- Supplier
+- Expiry Item
+- Customer (membership)
+- Staff
+⋅⋅⋅Admin attributes, 0 or 1, indicating admin or not
+- Cart
+- Report
+- Payment (type)
