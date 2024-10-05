@@ -39,8 +39,12 @@ ERD (added):
 - Supplier
 - Expiry Item
 - Customer (membership)
+  1. birthday: for birthday promotion 
 - Staff
-⋅⋅⋅Admin attributes, 0 or 1, indicating admin or not
+  1. Admin attributes, 0 or 1, indicating admin or not
 - Cart
+  1. will be implemented if there will be online shopping added
 - Report
+  1. status: deleted, incomplete, complete<br/>
+  2. type: daily, weekly, etc...
 - Payment (type)
