@@ -31,6 +31,7 @@
 | Time | Name | Explanation |
 |---|---|---|
 | 18.30 - 20:00 | 410856057 Tan Shan Yu & 410855315 Kenny | ERD diagram created |
+
 Summary: 
 ERD (added):
 - Order
