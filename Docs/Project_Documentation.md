@@ -62,3 +62,29 @@ ERD (added):
 - Supplier: "contact_person" attribute seperated into "firstName" and "lastName" attribute
 - Customer, Staff: "name" attribute seperated into "firstName" and "lastName" attribute
 - Added relations to the ERD
+1. Category to Product:<br/>
+One-to-Many: Each category can have many products, but each product belongs to only one category.
+
+2. Product to Storage:<br/>
+One-to-Many: Each product may have multiple entries in storage across different locations.
+
+3. Supplier to Product:<br/>
+One-to-Many: A supplier can supply many products, but each product typically comes from one supplier.
+
+4. Storage to Order:<br/>
+Many-to-Many: An order can come from many storage, and a storage can supply many orders
+
+5. Storage to Expired:<br/>
+One-to-Many: Each storage entry can have multiple or no expired items records, as different batches or lots of the same product can expire at different times.
+
+6. Order to Cart:<br/>
+One-to-One: Each order can be a cart for online shopping, but not all order has to have a cart, meaning it's a mortar-and-brick retail store
+
+7. Payment to Order:<br/>
+Many-to-One: There can be multiple payment type in an order, but each order can only have one payment type
+
+8. Order to Report:<br/>
+Many-to-One: Multiple orders are compiled into a single report. Each report summarizes or aggregates data from multiple orders.
+
+9. Customer to Order:<br/>
+One-to-Many: Each customer can have multiple orders, but each order is placed by one customer.
