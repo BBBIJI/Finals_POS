@@ -49,3 +49,16 @@ ERD (added):
   1. status: deleted, incomplete, complete<br/>
   2. type: daily, weekly, etc...
 - Payment (type)
+
+**6 October 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 18.30 - 20:00 | 410856057 Tan Shan Yu | ERD diagram modifications |
+
+Summary:<br/>
+ERD (added):
+- Storage: "Name" attribute changed to "nickname"
+- Supplier: "Name" attribute changed to "company"
+- Supplier: "contact_person" attribute seperated into "firstName" and "lastName" attribute
+- Customer, Staff: "name" attribute seperated into "firstName" and "lastName" attribute
+- Added relations to the ERD
