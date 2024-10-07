@@ -7,6 +7,44 @@
 | 16.30 pm | 410855059 Levina & 410856057 Shanyu | Create use case diagram |
 | 18.30 pm | 410855059 Levina | Design app wireframe (low fidelity) **tablet** format |
 
+Summary:
+Use Case Diagram:
+Actors:
+- Clerk
+- Customer
+- System Administrator (Admin)
+- Inventory Stocker
+
+System 
+- Software
+
+Use cases:
+Clerk:
+1. Receive Payment
+2. Checkout process
+
+Customer:
+1. Login membership
+2. Add product to cart 
+3. Make payment
+
+System Administrator:
+1. Modify product detail
+2. Open list of Stock
+3. Receive Analytic report
+
+Inventory Stocker:
+1. Open list of Stock
+2. Open product barcode scanner 
+3. Input product 
+4. Remove Expired item
+
+Software:
+1. Update list
+2. Update report analytic
+3. Sales processing 
+- Updates all use cases into the database
+
 **28 September 2024**
 | Time | Name | Explanation |
 |---|---|---|
