@@ -8,6 +8,22 @@
 | 18.30 pm | 410855059 Levina | Design app wireframe (low fidelity) **tablet** format |
 
 Summary:
+
+Wireframe:
+- Tablet format
+  - Staff POS
+  - Admin POS
+  - Admin & staff POS(closed)**
+  - Staff Inventory
+  - Admin Inventory
+  - Admin & staff Inventory(closed)**
+  - Admin & staff Scanner
+  - Admin staff report
+  - Admin staff report(closed)
+    
+*Menu bar closed<br/>
+*When menu bar is closed, Admin and staff's POS and inventory pages looks the same
+    
 Use Case Diagram:
 Actors:
 - Clerk
@@ -48,22 +64,66 @@ Software:
 **28 September 2024**
 | Time | Name | Explanation |
 |---|---|---|
-| 19.00 pm | 410855059 Levina  | App name is decided=**Pulse** ; Design app logo and icon |
+| 19.00 pm | 410855059 Levina  | App name is decided=**Pulse** ; Design app [logo](https://github.com/BBBIJI/Finals_POS/tree/main/Logo) and icon |
+
+For logo information = [logo explanation](https://github.com/BBBIJI/Finals_POS/blob/main/Logo/Logo_Explanation.pdf)
 
 **30 September 2024**
 | Time | Name | Explanation |
 |---|---|---|
 | 21.40 pm | 410855059 Levina & 410856057 Shanyu | Create flowchart & activity diagram |
 
+Summary:
+
+Flowchart
+- Login page
+  - for admin and staff
+- Staff at store(Cashier)
+  
+UML Activity Diagram
+- Admin dashboard
+- Staff at warehouse(Inventory stocker)
+
 **2 October 2024**
 | Time | Name | Explanation |
 |---|---|---|
 | 21.00 pm | 410855059 Levina | Design app wireframe (low fidelity) **phone** format |
 
+Summary:
+
+Wireframe:
+  - Phone format
+     - Staff POS
+     - Admin POS
+     - Staff Inventory
+     - Admin Inventory
+     - Admin & Staff Checkout
+     - Admin & staff Scanner
+     - Admin staff report
+
 **4 October 2024**
 | Time | Name | Explanation |
 |---|---|---|
-| 19.00 pm | 410855059 Levina | Wireframe finished ; Start design UI/UX prototype based on wireframe |
+| 19.00 pm | 410855059 Levina | Wireframe finished ; Start design UI/UX prototype based on wireframe **tablet** format|
+
+Summary:
+
+Prototype:
+- Tablet format
+    - Splash screen
+    - Admin & staff Login
+    - Staff POS
+    - Admin POS
+    - Admin & staff POS(closed)**
+    - Staff Inventory
+    - Admin Inventory
+    - Admin & staff Inventory(closed)**
+    - Admin & staff Scanner
+    - Admin staff report
+    - Admin staff report(closed)
+ 
+*Menu bar closed<br/>
+*When menu bar is closed, Admin and staff's POS and inventory pages looks the same
 
 **5 October 2024**
 | Time | Name | Explanation |
