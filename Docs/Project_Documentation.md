@@ -186,3 +186,15 @@ Many-to-One: Multiple orders are compiled into a single report. Each report summ
 
 9. Customer to Order:<br/>
 One-to-Many: Each customer can have multiple orders, but each order is placed by one customer.
+
+**22 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 16.30 - 17.30 | 410856057 Tan Shan Yu | MySQL database modifications |
+
+Summary:<br/>
+final_pos database:
+1. Added dataset for the database
+2. renamed 'order' table to 'customer_order' because order is a keyword...
+   *REMARK:* add DROP TABLE IF EXISTS `order`; if you have already run the database before DROP TABLE IF EXISTS `customer_order`;
+Check [a link](https://github.com/BBBIJI/Finals_POS/blob/main/Database/Dump20241122.sql) for full changes
