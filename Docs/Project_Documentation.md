@@ -195,6 +195,6 @@ One-to-Many: Each customer can have multiple orders, but each order is placed by
 Summary:<br/>
 final_pos database:
 1. Added dataset for the database
-2. renamed 'order' table to 'customer_order' because order is a keyword...
-   *REMARK:* add DROP TABLE IF EXISTS `order`; if you have already run the database before DROP TABLE IF EXISTS `customer_order`;
-Check [a link](https://github.com/BBBIJI/Finals_POS/blob/main/Database/Dump20241122.sql) for full changes
+2. renamed 'order' table to 'customer_order' because order is a keyword...<br/>
+   *REMARK:* add DROP TABLE IF EXISTS `order`; if you have already run the database before DROP TABLE IF EXISTS `customer_order`;<br/>
+Check [Dump20241122.sql](https://github.com/BBBIJI/Finals_POS/blob/main/Database/Dump20241122.sql) for full changes
