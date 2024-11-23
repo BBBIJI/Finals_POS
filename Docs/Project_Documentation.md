@@ -198,3 +198,12 @@ final_pos database:
 2. renamed 'order' table to 'customer_order' because order is a keyword...<br/>
    *REMARK:* add DROP TABLE IF EXISTS `order`; if you have already run the database before DROP TABLE IF EXISTS `customer_order`;<br/>
 Check [Dump20241122.sql](https://github.com/BBBIJI/Finals_POS/blob/main/Database/Dump20241122.sql) for full changes
+
+**22 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 17.00 - 19.00 | 410856057 Tan Shan Yu | MySQL database Integration |
+
+Summary:<br/>
+1. Created [Direct MySQL connection](https://github.com/BBBIJI/Finals_POS/blob/main/src/flutter_application_1/lib/services/mysql_conn.dart) 
+2. Created basic connect, fetch, and insert method to use in widgets
