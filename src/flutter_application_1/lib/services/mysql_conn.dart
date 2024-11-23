@@ -18,4 +18,20 @@ class DatabaseConn {
     await conn.connect();
     return conn;
   }
+
+  // Example: Fetch data from the database
+  Future<List<Map<String, dynamic>>> fetchData(String query) async {
+    final conn = await connect();
+    final results = await conn.execute(query);
+    return results.rows.map((row) => row.assoc()).toList();
+    await conn.close();
+  }
+
+  // Example: Insert data into the database
+  Future<void> insertData(String query, List<dynamic> values) async {
+    final conn = await connect();
+    await conn.execute(query, params: values);
+    print('Data inserted successfully!');
+    await conn.close();
+  }
 }
