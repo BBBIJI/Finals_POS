@@ -212,8 +212,8 @@ Summary:<br/>
 | Time | Name | Explanation |
 |---|---|---|
 | 15.00 - 15.30 | 410856057 Tan Shan Yu | Combine WIP (front & backend) |
-| 16.00 - ? | 410856057 Tan Shan Yu | Migrate from mysql_client pkg to mysql1 pkg |
+| 16.15 - 16.45 | 410856057 Tan Shan Yu | Migrate from mysql_client pkg to mysql1 pkg |
 
 Summary: <br/>
 1. Combining front end code from Ramon with MySQL connection, further testing needed after migration
-2. Migration from mysql_client to mysql1 for SQL injections protocols 
+2. Migration from mysql_client to mysql1 for SQL injections features 
