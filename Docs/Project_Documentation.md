@@ -199,7 +199,7 @@ final_pos database:
    *REMARK:* add DROP TABLE IF EXISTS `order`; if you have already run the database before DROP TABLE IF EXISTS `customer_order`;<br/>
 Check [Dump20241122.sql](https://github.com/BBBIJI/Finals_POS/blob/main/Database/Dump20241122.sql) for full changes
 
-**22 November 2024**
+**23 November 2024**
 | Time | Name | Explanation |
 |---|---|---|
 | 17.00 - 19.00 | 410856057 Tan Shan Yu | MySQL database Integration |
@@ -207,3 +207,13 @@ Check [Dump20241122.sql](https://github.com/BBBIJI/Finals_POS/blob/main/Database
 Summary:<br/>
 1. Created [Direct MySQL connection](https://github.com/BBBIJI/Finals_POS/blob/main/src/flutter_application_1/lib/services/mysql_conn.dart) 
 2. Created basic connect, fetch, and insert method to use in widgets
+
+**24 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 15.00 - 15.30 | 410856057 Tan Shan Yu | Combine WIP (front & backend) |
+| 16.00 - ? | 410856057 Tan Shan Yu | Migrate from mysql_client pkg to mysql1 pkg |
+
+Summary: <br/>
+1. Combining front end code from Ramon with MySQL connection, further testing needed after migration
+2. Migration from mysql_client to mysql1 for SQL injections protocols 
