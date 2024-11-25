@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Pulse Pos and Inventory',
         debugShowCheckedModeBanner: false,
+        // Home page
         home: const CreateProduct(),
         theme: ThemeData(
           useMaterial3: true,
