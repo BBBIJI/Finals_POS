@@ -216,4 +216,13 @@ Summary:<br/>
 
 Summary: <br/>
 1. Combining front end code from Ramon with MySQL connection, further testing needed after migration
-2. Migration from mysql_client to mysql1 for SQL injections features 
+2. Migration from mysql_client to mysql1 for SQL injections features
+
+**25 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 16.00 - 16.15 | 410856057 Tan Shan Yu | Debugging |
+
+Summary: <br/>
+1. Fixed error: Another exception was thrown: Unable to load asset: "assets/profile.png".
+    - Changed "pubspec.yaml" - assets/image to assests/ - since profile.png is in assests/ not assests/image
