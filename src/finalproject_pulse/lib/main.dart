@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/presentation/splashscreen/bloc/splash_cubit.dart';
 import 'package:finalproject_pulse/presentation/mainpage/bloc/inventory_bloc.dart';
+import 'package:finalproject_pulse/presentation/profilepage/pages/profilepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
         title: 'Pulse Pos and Inventory',
         debugShowCheckedModeBanner: false,
         // Home page
-        home: const CreateProduct(),
+        home: const Splashscreen(),
         theme: ThemeData(
           useMaterial3: true,
         ),

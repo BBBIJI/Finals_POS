@@ -7,6 +7,7 @@ import "package:mysql1/mysql1.dart";
 
 // NOTE: change the config according to your MySQL workbench since its local database, not
 // online database currently (LINE 15 - 20)
+// ALSO MAKE SURE WORKBENCH IS OPEN FOR connection
 
 // Side note: all of these are async methods, must be in a async function to work
 // But I will deal with it for the most part
