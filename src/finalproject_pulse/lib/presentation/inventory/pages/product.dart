@@ -1,10 +1,25 @@
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+
 import 'package:flutter/material.dart';
-import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart'; // Import the SideNavigationRail widget
+import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
+import 'package:finalproject_pulse/presentation/inventory/pages/category.dart'; // Import InventoryCategory for navigation
+import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 
 class InventoryProduct extends StatelessWidget {
   const InventoryProduct({super.key});
+
+  // Navigation logic for SideNavigationRail
+  void _onDestinationSelected(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        // Already on the InventoryProduct page, no action needed
+        break;
+      case 1:
+        AppNavigator.pushReplacement(context, const InventoryCategory());
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +34,7 @@ class InventoryProduct extends StatelessWidget {
             selectedIndex:
                 0, // Currently selected index for the navigation rail
             onDestinationSelected: (int index) {
-              // Handle navigation logic here, for example changing views
+              _onDestinationSelected(context, index);
             },
           ),
           // Main content area for inventory management
@@ -54,8 +69,7 @@ class InventoryProduct extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(
-                                width: 10), // Space between title and dropdown
+                            SizedBox(width: 10),
                             // Dropdown menu for selecting product categories
                             DropdownButton<String>(
                               hint: Text('Select Category'),
@@ -141,9 +155,7 @@ class InventoryProduct extends StatelessWidget {
                               Text('Upload', style: TextStyle(fontSize: 16)),
                             ],
                           ),
-                          SizedBox(
-                              width:
-                                  20), // Space between Upload and Scanner icons
+                          SizedBox(width: 20),
                           // Scanner button
                           Column(
                             children: [

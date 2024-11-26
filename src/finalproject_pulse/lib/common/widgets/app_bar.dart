@@ -1,6 +1,11 @@
 // lib/custom_widgets.dart
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
+import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
+import 'package:finalproject_pulse/presentation/mainpage/pages/mainpage.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -75,28 +80,30 @@ class CustomDrawer extends StatelessWidget {
                     icon: Icons.shopping_cart,
                     label: 'POS',
                     onTap: () {
-                      Navigator.pop(context); // Define navigation logic
+                      AppNavigator.pushReplacement(
+                          context, Mainpage()); // Define navigation logic
                     },
                   ),
                   _buildDrawerItem(
                     icon: Icons.inventory,
                     label: 'Inventory',
                     onTap: () {
-                      Navigator.pop(context); // Define navigation logic
+                      AppNavigator.pushReplacement(context,
+                          InventoryProduct()); // Define navigation logic
                     },
                   ),
                   _buildDrawerItem(
                     icon: Icons.receipt,
                     label: 'Receipts',
                     onTap: () {
-                      Navigator.pop(context); // Define navigation logic
+                      // Define navigation logic
                     },
                   ),
                   _buildDrawerItem(
                     icon: Icons.report,
                     label: 'Staff Report',
                     onTap: () {
-                      Navigator.pop(context); // Define navigation logic
+                      // Define navigation logic
                     },
                   ),
                 ],

@@ -1,12 +1,26 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
+import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 
 class InventoryCategory extends StatelessWidget {
   const InventoryCategory({super.key});
+
+  // Navigation logic for SideNavigationRail
+  void _onDestinationSelected(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        AppNavigator.pushReplacement(context, InventoryProduct());
+
+        break;
+      case 1:
+        // Already on InventoryCategory page, no action needed
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +32,10 @@ class InventoryCategory extends StatelessWidget {
         children: [
           // Side navigation rail for navigating between inventory pages
           SideNavigationRail(
-            selectedIndex: 0, // Currently selected index in the navigation rail
+            selectedIndex:
+                1, // Currently selected index for the navigation rail
             onDestinationSelected: (int index) {
-              // Handle navigation changes here based on the selected index
+              _onDestinationSelected(context, index);
             },
           ),
           // Main content area for displaying inventory categories
