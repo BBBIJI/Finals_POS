@@ -1,4 +1,4 @@
-import 'package:finalproject_pulse/presentation/inventory/pages/category.dart';
+import 'package:src/finalproject_pulse/presentation/inventory/pages/category.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/create_category.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/create_product.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/presentation/splashscreen/bloc/splash_cubit.dart';
 import 'package:finalproject_pulse/presentation/mainpage/bloc/inventory_bloc.dart';
-<<<<<<< Updated upstream
 import 'package:finalproject_pulse/presentation/profilepage/pages/profilepage.dart';
 =======
 >>>>>>> Stashed changes
