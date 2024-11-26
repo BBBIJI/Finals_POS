@@ -44,11 +44,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               top: 8.0, right: 12.0), // Padding for avatar
           child: CircleAvatar(
             backgroundImage: AssetImage(
-<<<<<<< Updated upstream
               'assets/profile.png', // Replace with your profile image asset
-=======
-              'assets/profile.jpg', // Replace with your profile image asset
->>>>>>> Stashed changes
             ),
             radius: 20, // Adjust CircleAvatar size as needed
           ),

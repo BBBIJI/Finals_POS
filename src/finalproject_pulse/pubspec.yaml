@@ -30,11 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-<<<<<<< Updated upstream
   mysql1: ^0.20.0 
-=======
-  
->>>>>>> Stashed changes
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -62,12 +58,8 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-<<<<<<< Updated upstream
     - assets/
-    - assets/images/
-=======
     - assets/Images/
->>>>>>> Stashed changes
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

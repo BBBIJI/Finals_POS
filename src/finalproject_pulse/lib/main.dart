@@ -3,7 +3,7 @@ import 'package:finalproject_pulse/presentation/inventory/pages/create_category.
 import 'package:finalproject_pulse/presentation/inventory/pages/create_product.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
 import 'package:finalproject_pulse/presentation/mainpage/pages/mainpage.dart';
-import 'package:finalproject_pulse/presentation/splashscreen/pages/splashscreen.dart';
+import 'package:finalproject_pulse/lib/presentation/splashscreen/pages/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/presentation/splashscreen/bloc/splash_cubit.dart';
