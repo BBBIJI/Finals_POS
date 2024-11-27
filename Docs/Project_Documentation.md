@@ -192,7 +192,8 @@ One-to-Many: Each customer can have multiple orders, but each order is placed by
 |---|---|---|
 | 09.00 am | 410855059 Levina | Finalize UI prototype |
 
-Summary:<br/>
+Summary:
+
 UI Prototype: [Figma Prototype](https://github.com/BBBIJI/Finals_POS/blob/main/UI_Design/Ui_prototype.md)
 
 **Prototype:**
@@ -262,7 +263,7 @@ UI Prototype: [Figma Prototype](https://github.com/BBBIJI/Finals_POS/blob/main/U
 **26 October 2024**
 | Time | Name | Explanation |
 |---|---|---|
-| 04.00 pm | 410855356 Ramon | Start to Implementing figma design into flutter |
+| 04.00 pm | 410855356 Ramon | Start to Implement figma design into flutter |
 
 Summary:<br/>
 Splash screen + Login page created
@@ -272,7 +273,8 @@ Splash screen + Login page created
 |---|---|---|
 | 08.00 pm | 410855356 Ramon | Continue Implementing figma design into flutter |
 
-Summary:<br/>
+Summary:
+
 Create reusable widgets:
 - app navigator class for pushreplacement
 - app main colors
@@ -283,7 +285,8 @@ Create reusable widgets:
 |---|---|---|
 | 06.00 pm | 410855356 Ramon | Continue Implementing figma design into flutter |
 
-Summary:<br/>
+Summary:
+
 Create reusable widgets:
 - custom side navigation rail
 - custom drawer
@@ -292,12 +295,38 @@ Create reusable widgets:
 **13 November 2024**
 | Time | Name | Explanation |
 |---|---|---|
-| 07.00 pm | 410855356 Ramon & 410855059 Levina | APP's main functionality |
+| 07.00 pm | 410855356 Ramon & 410855059 Levina | Implement APP's functionality + design |
 
 Summary:<br/>
-- Create POS, Inventory, Inventorycategory, and checkout page
-- Product can be added to checkout box and will be directed to checkout page
+- Create POS, Inventory, Inventorycategory, and checkout page(cash&card)
+  - Products in the POS page can be added to cart
+  - Before checkout must choose payment method then will be directed to checkout page
  
+**18 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 09.30 pm | 410855356 Ramon | Implement APP's  design |
+
+Summary:<br/>
+- Continue developing POS, inventory, and inventorycategory page
+    - Editing the pages UI design
+    - Create createproduct & createcategory page 
+ 
+**20 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 10.00 pm | 410855059 Levina | Implement APP's functionality |
+
+Summary:<br/>
+- Create Sales (receipt) page
+  - After checkout will be directed to sales page
+  - Checkout receipt history will be listed on the sales page
+
+- Receipt history:
+  - Cash: Total amount, payment method, date
+  - Card: Total amount, payment method, date, card holder name
+  
+  
 **22 November 2024**
 | Time | Name | Explanation |
 |---|---|---|
@@ -314,10 +343,16 @@ Check [Dump20241122.sql](https://github.com/BBBIJI/Finals_POS/blob/main/Database
 | Time | Name | Explanation |
 |---|---|---|
 | 17.00 - 19.00 | 410856057 Tan Shan Yu | MySQL database Integration |
+| 08.00 pm | 410855356 Ramon | Implement APP's functionality |
 
 Summary:<br/>
+MySQL database Integration:
 1. Created [Direct MySQL connection](https://github.com/BBBIJI/Finals_POS/blob/main/src/flutter_application_1/lib/services/mysql_conn.dart) 
 2. Created basic connect, fetch, and insert method to use in widgets
+
+Implement APP's functionality:
+- continue developing createproduct & createcategory page
+  - start implementing the pages functionality
 
 **24 November 2024**
 | Time | Name | Explanation |
@@ -337,3 +372,12 @@ Summary: <br/>
 Summary: <br/>
 1. Fixed error: Another exception was thrown: Unable to load asset: "assets/profile.png".
     - Changed "pubspec.yaml" - assets/image to assests/ - since profile.png is in assests/ not assests/image
+  
+**27 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 06.45 pm | 410855356 Ramon | Implement APP's functionality |
+
+Summary:<br/>
+- continue developing createproduct & createcategory page
+  - creating state managament and model for assigining product and category to the product and category list 
