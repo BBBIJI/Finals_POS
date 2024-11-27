@@ -1,5 +1,6 @@
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/presentation/inventory/pages/create_product.dart';
 
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
@@ -167,6 +168,18 @@ class InventoryProduct extends StatelessWidget {
                                 },
                               ),
                               Text('Scanner', style: TextStyle(fontSize: 16)),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.add, size: 50),
+                                onPressed: () {
+                                  AppNavigator.pushReplacement(
+                                      context, const CreateProduct());
+                                },
+                              ),
+                              Text('Add Item', style: TextStyle(fontSize: 16)),
                             ],
                           ),
                         ],

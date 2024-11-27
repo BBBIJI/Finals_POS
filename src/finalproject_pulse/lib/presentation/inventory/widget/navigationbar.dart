@@ -1,7 +1,7 @@
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class SideNavigationRail extends StatelessWidget {
+class SideNavigationRail extends StatefulWidget {
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
 
@@ -12,11 +12,16 @@ class SideNavigationRail extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<SideNavigationRail> createState() => _SideNavigationRailState();
+}
+
+class _SideNavigationRailState extends State<SideNavigationRail> {
+  @override
   Widget build(BuildContext context) {
     return NavigationRail(
       backgroundColor: AppColors.primarygreen,
-      selectedIndex: selectedIndex,
-      onDestinationSelected: onDestinationSelected,
+      selectedIndex: widget.selectedIndex,
+      onDestinationSelected: widget.onDestinationSelected,
       minWidth: 120, // Adjust the width of the rail
       labelType: NavigationRailLabelType.none, // Hide labels for now
       indicatorColor:
