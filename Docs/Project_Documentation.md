@@ -187,6 +187,117 @@ Many-to-One: Multiple orders are compiled into a single report. Each report summ
 9. Customer to Order:<br/>
 One-to-Many: Each customer can have multiple orders, but each order is placed by one customer.
 
+**24 October 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 09.00 am | 410855059 Levina | Finalize UI prototype |
+
+Summary:<br/>
+UI Prototype: [Figma Prototype](https://github.com/BBBIJI/Finals_POS/blob/main/UI_Design/Ui_prototype.md)
+
+**Prototype:**
+- Staff
+- Admin*
+
+*Admin prototype : staff prototype + create category, create product, staffreport
+
+**Prototype staff (Tablet format):**
+- Splash screen
+- Login
+- Menubar -> Can navigate to: POS, inventory, Receiptscash
+- POS
+- Camera
+- POS2
+- Cash -> Frame Cash will pop out
+- Cash1 -> Frame Cash1 will pop out
+- Card -> Frame Card will pop out
+- Card1 -> Frame Card1 will pop out
+- POSclear
+- Inventory
+- Shelfcamera -> Frame 9 will pop out
+- Inventorycategory
+- Inventorycamera
+- Inventoryproduct1 -> Frame 6 will pop out
+- Inventoryproductnext -> Frame 10 will pop out
+- Inventoryproduct2 -> Frame 7 will pop out
+- Inventoryproductaddnext -> Frame 7 will pop out
+- Receiptscash
+- Receiptscard
+- Userprofile
+- Userpassword
+- Usersessions
+- Userschedule -> Can pop out Frame: 13nov, 7nov, 5nov, 9nov, 23nov, 15nov, 3nov
+
+**Prototype Admin (Tablet format):**
+- Splash screen
+- Login
+- Menubar -> Can navigate to: POS, inventory, Receiptscash
+- POS
+- Camera
+- POS2
+- Cash -> Frame Cash will pop out
+- Cash1 -> Frame Cash1 will pop out
+- Card -> Frame Card will pop out
+- Card1 -> Frame Card1 will pop out
+- POSclear
+- Inventory
+- Createproducteach -> Frame 10 will pop out
+- Createproductweight -> Frame 10 will pop out
+- Shelfcamera -> Frame 9 will pop out
+- Inventorycategory
+- Create category -> Can pop out frame product list then Frame 11 will pop out
+- Inventorycamera
+- Inventoryproduct1 -> Frame 6 will pop out
+- Inventoryproductnext -> Frame 10 will pop out
+- Inventoryproduct2 -> Frame 7 will pop out
+- Inventoryproductaddnext -> Frame 7 will pop out
+- Receiptscash
+- Receiptscard
+- Userprofile
+- Userpassword
+- Usersessions
+- Userschedule -> Can pop out Frame: 13nov, 7nov, 5nov, 9nov, 23nov, 15nov, 3nov
+- Staffreport
+  
+**26 October 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 04.00 pm | 410855356 Ramon | Start to Implementing figma design into flutter |
+
+Summary:<br/>
+Splash screen + Login page created
+
+**29 October 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 08.00 pm | 410855356 Ramon | Continue Implementing figma design into flutter |
+
+Summary:<br/>
+Create reusable widgets:
+- app navigator class for pushreplacement
+- app main colors
+- image
+
+**5 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 06.00 pm | 410855356 Ramon | Continue Implementing figma design into flutter |
+
+Summary:<br/>
+Create reusable widgets:
+- custom side navigation rail
+- custom drawer
+- custom app bar
+
+**13 November 2024**
+| Time | Name | Explanation |
+|---|---|---|
+| 07.00 pm | 410855356 Ramon & 410855059 Levina | APP's main functionality |
+
+Summary:<br/>
+- Create POS, Inventory, Inventorycategory, and checkout page
+- Product can be added to checkout box and will be directed to checkout page
+ 
 **22 November 2024**
 | Time | Name | Explanation |
 |---|---|---|
