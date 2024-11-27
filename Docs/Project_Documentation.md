@@ -380,3 +380,4 @@ Summary: <br/>
 
 Summary:<br/>
 - continue developing createproduct & createcategory page
+  - creating state managament and model for assigining product and category to the product and category list 
