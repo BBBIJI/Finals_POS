@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:finalproject_pulse/data/model/product_model.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
-import 'package:flutter/material.dart';
-import 'package:finalproject_pulse/common/widgets/custom_button.dart';
 
 class CreateProduct extends StatefulWidget {
   const CreateProduct({super.key});
@@ -11,15 +11,56 @@ class CreateProduct extends StatefulWidget {
 }
 
 class _CreateProductState extends State<CreateProduct> {
-  int? _soldBy =
-      1; // Variable to keep track of the "sold by" selection (Each or Weight)
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _expiredDateController = TextEditingController();
+  final TextEditingController _barcodeController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _unitController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  String? _category;
+  int? _soldBy = 1;
+
+  void _pickDate() async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (selectedDate != null) {
+      setState(() {
+        _expiredDateController.text =
+            "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+      });
+    }
+  }
+
+  void _saveProduct() {
+    if (_formKey.currentState?.validate() ?? false) {
+      final String soldBy = _soldBy == 1 ? 'Each' : 'Weight';
+
+      // Create a Product object from the entered data
+      final product = Product(
+        name: _nameController.text,
+        category: _category ?? 'Unknown',
+        expiredDate: _expiredDateController.text,
+        barcode: _barcodeController.text,
+        soldBy: soldBy,
+        price: double.parse(_priceController.text),
+        unit: _unitController.text,
+      );
+
+      // Pass the Product object back to the previous screen
+      Navigator.pop(context, product);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greenlight,
       appBar: CustomAppBar(), // Custom app bar for the page
-      drawer: CustomDrawer(), // Custom drawer for side navigation
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 16.0),
         child: Column(
@@ -30,11 +71,10 @@ class _CreateProductState extends State<CreateProduct> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  onPressed: () {}, // Handle back button press
-                  icon: Icon(Icons.arrow_back),
-                  iconSize: 50,
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back, size: 30),
                 ),
-                Text(
+                const Text(
                   'Create Product',
                   style: TextStyle(
                     color: AppColors.primarygreen,
@@ -43,8 +83,8 @@ class _CreateProductState extends State<CreateProduct> {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {}, // Handle save button press
-                  child: Text(
+                  onPressed: _saveProduct,
+                  child: const Text(
                     'SAVE',
                     style: TextStyle(
                       color: AppColors.primarygreen,
@@ -55,9 +95,10 @@ class _CreateProductState extends State<CreateProduct> {
                 ),
               ],
             ),
-            SizedBox(height: 20), // Space between header and form
-            // Main Container for Product Form
-            Center(
+            const SizedBox(height: 20),
+            // Form for product creation
+            Form(
+              key: _formKey,
               child: Container(
                 width: 600,
                 padding: const EdgeInsets.all(20.0),
@@ -65,186 +106,123 @@ class _CreateProductState extends State<CreateProduct> {
                   border: Border.all(color: Colors.grey, width: 1),
                   borderRadius: BorderRadius.circular(16.0),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 30.0, vertical: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                          height: 30), // Space before Product Image section
-                      // Product Image Section
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Placeholder for Product Image
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Icon(
-                              Icons.image,
-                              size: 50,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          SizedBox(
-                              width: 20), // Space between image and buttons
-                          Column(
-                            children: [
-                              // Button to Select Photo
-                              CustomButton(
-                                text: 'Select Photo',
-                                onPressed: () {}, // Handle selecting photo
-                                color: AppColors.primarygreen,
-                                width: 160.0,
-                                height: 50.0,
-                                borderRadius: 8.0,
-                              ),
-                              SizedBox(height: 10), // Space between buttons
-                              // Button to Take Photo
-                              CustomButton(
-                                text: 'Take Photo',
-                                onPressed: () {}, // Handle taking photo
-                                color: AppColors.primarygreen,
-                                width: 160.0,
-                                height: 50.0,
-                                borderRadius: 8.0,
-                              ),
-                            ],
-                          ),
-                        ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Product Name',
+                        labelStyle: TextStyle(color: AppColors.primarygreen),
+                        border: const UnderlineInputBorder(),
                       ),
-                      SizedBox(height: 30), // Space before product details form
-                      // Product Name Input Field
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Product name',
-                          labelStyle: TextStyle(color: AppColors.primarygreen),
-                          border: UnderlineInputBorder(),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Enter a name'
+                          : null,
+                    ),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Category',
+                        labelStyle: TextStyle(color: AppColors.primarygreen),
+                      ),
+                      items: ['Category 1', 'Category 2', 'Category 3']
+                          .map((String category) => DropdownMenuItem<String>(
+                                value: category,
+                                child: Text(category),
+                              ))
+                          .toList(),
+                      onChanged: (value) => setState(() => _category = value),
+                      validator: (value) =>
+                          value == null ? 'Select a category' : null,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _expiredDateController,
+                      decoration: InputDecoration(
+                        labelText: 'Expired Date',
+                        labelStyle: TextStyle(color: AppColors.primarygreen),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: _pickDate,
                         ),
                       ),
-                      SizedBox(height: 20), // Space between input fields
-                      // Product Category Dropdown
-                      DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          labelText: 'Category',
-                          labelStyle: TextStyle(color: AppColors.primarygreen),
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _barcodeController,
+                      decoration: InputDecoration(
+                        labelText: 'Barcode Number',
+                        labelStyle: TextStyle(color: AppColors.primarygreen),
+                        border: const UnderlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _priceController,
+                            decoration: InputDecoration(
+                              labelText: 'Price',
+                              labelStyle:
+                                  TextStyle(color: AppColors.primarygreen),
+                            ),
+                            keyboardType: TextInputType.number,
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Enter a price'
+                                : null,
+                          ),
                         ),
-                        items: ['Category 1', 'Category 2', 'Category 3']
-                            .map((String category) => DropdownMenuItem<String>(
-                                  value: category,
-                                  child: Text(category),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          // Handle category selection change
-                        },
-                      ),
-                      SizedBox(height: 20), // Space between input fields
-                      // SKU and Barcode Input Fields
-                      Row(
-                        children: [
-                          // SKU Input Field
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'SKU',
-                                labelStyle:
-                                    TextStyle(color: AppColors.primarygreen),
-                                border: UnderlineInputBorder(),
-                              ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _unitController,
+                            decoration: InputDecoration(
+                              labelText: 'Unit',
+                              labelStyle:
+                                  TextStyle(color: AppColors.primarygreen),
                             ),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Enter a unit'
+                                : null,
                           ),
-                          SizedBox(
-                              width:
-                                  20), // Space between SKU and Barcode fields
-                          // Barcode Input Field
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'Barcode number',
-                                labelStyle:
-                                    TextStyle(color: AppColors.primarygreen),
-                                border: UnderlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20), // Space before "Sold By" section
-                      // Sold By Section
-                      Row(
-                        children: [
-                          // Sold By Label
-                          Text(
-                            'Sold by',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Text('Sold by',
                             style: TextStyle(
-                              color: AppColors.primarygreen,
-                              fontSize: 16,
+                                color: AppColors.primarygreen, fontSize: 16)),
+                        Row(
+                          children: [
+                            Radio(
+                              value: 1,
+                              groupValue: _soldBy,
+                              onChanged: (value) =>
+                                  setState(() => _soldBy = value as int),
                             ),
-                          ),
-                          SizedBox(
-                              width: 20), // Space between label and options
-                          // Sold By Options - Each and Weight
-                          Row(
-                            children: [
-                              Radio(
-                                  value: 1,
-                                  groupValue: _soldBy,
-                                  onChanged: (value) =>
-                                      setState(() => _soldBy = value as int)),
-                              Text('Each'), // Option: Sold by Each
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Radio(
-                                  value: 2,
-                                  groupValue: _soldBy,
-                                  onChanged: (value) =>
-                                      setState(() => _soldBy = value as int)),
-                              Text('Weight'), // Option: Sold by Weight
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20), // Space between input fields
-                      // Price and Unit Input Fields
-                      Row(
-                        children: [
-                          // Price Input Field
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'Price',
-                                labelStyle:
-                                    TextStyle(color: AppColors.primarygreen),
-                                border: UnderlineInputBorder(),
-                              ),
+                            const Text('Each'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Radio(
+                              value: 2,
+                              groupValue: _soldBy,
+                              onChanged: (value) =>
+                                  setState(() => _soldBy = value as int),
                             ),
-                          ),
-                          SizedBox(
-                              width: 20), // Space between Price and Unit fields
-                          // Unit Input Field
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'Unit',
-                                labelStyle:
-                                    TextStyle(color: AppColors.primarygreen),
-                                border: UnderlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                            const Text('Weight'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),

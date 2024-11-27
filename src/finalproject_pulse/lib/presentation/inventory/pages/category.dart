@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/presentation/inventory/pages/create_category.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
@@ -130,7 +131,8 @@ class InventoryCategory extends StatelessWidget {
                           IconButton(
                             icon: Icon(Icons.add, size: 50),
                             onPressed: () {
-                              // Handle add action to create a new category
+                              AppNavigator.pushReplacement(
+                                  context, CreateCategory());
                             },
                           ),
                         ],

@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/presentation/inventory/pages/category.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/common/widgets/custom_button.dart';
 
@@ -53,7 +55,9 @@ class _CreateCategoryState extends State<CreateCategory> {
               children: [
                 // Back Button
                 IconButton(
-                  onPressed: () {}, // Define back button action here
+                  onPressed: () {
+                    AppNavigator.pushReplacement(context, InventoryCategory());
+                  }, // Define back button action here
                   icon: Icon(Icons.arrow_back),
                   iconSize: 50,
                 ),
