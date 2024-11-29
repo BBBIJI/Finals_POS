@@ -1,4 +1,7 @@
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
+import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
+import 'package:finalproject_pulse/presentation/inventory/pages/category.dart';
 import 'package:flutter/material.dart';
 
 class SideNavigationRail extends StatefulWidget {
@@ -16,12 +19,34 @@ class SideNavigationRail extends StatefulWidget {
 }
 
 class _SideNavigationRailState extends State<SideNavigationRail> {
+  void _onDestinationSelected(int index) {
+    setState(() {
+      widget.onDestinationSelected(index); // Update the selected index
+    });
+
+    // Navigate to different screens based on the selected index
+    switch (index) {
+      case 0: // Navigate to InventoryProduct page
+        AppNavigator.pushReplacement(
+          context,
+          const InventoryProduct(),
+        );
+        break;
+      case 1: // Navigate to InventoryCategory page
+        AppNavigator.pushReplacement(
+          context,
+          const InventoryCategory(),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return NavigationRail(
       backgroundColor: AppColors.primarygreen,
       selectedIndex: widget.selectedIndex,
-      onDestinationSelected: widget.onDestinationSelected,
+      onDestinationSelected: _onDestinationSelected,
       minWidth: 120, // Adjust the width of the rail
       labelType: NavigationRailLabelType.none, // Hide labels for now
       indicatorColor:
@@ -77,7 +102,6 @@ class _SideNavigationRailState extends State<SideNavigationRail> {
           ),
           label: Text(''), // Empty label, required by NavigationRailDestination
         ),
-        // Add more destinations as needed
       ],
     );
   }

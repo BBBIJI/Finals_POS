@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/create_category.dart';
@@ -6,20 +5,32 @@ import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
 import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
+import 'package:finalproject_pulse/presentation/inventory/widget/card_category.dart'; // Import your reusable CategoryCard widget
 
-class InventoryCategory extends StatelessWidget {
+class InventoryCategory extends StatefulWidget {
   const InventoryCategory({super.key});
 
-  // Navigation logic for SideNavigationRail
-  void _onDestinationSelected(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        AppNavigator.pushReplacement(context, InventoryProduct());
+  @override
+  State<InventoryCategory> createState() => _InventoryCategoryState();
+}
 
-        break;
-      case 1:
-        // Already on InventoryCategory page, no action needed
-        break;
+class _InventoryCategoryState extends State<InventoryCategory> {
+  final List<Map<String, dynamic>> _categories = [
+    {'icon': Icons.cottage, 'name': 'Dairy Products'},
+  ];
+
+  void _navigateToCreateCategory(BuildContext context) async {
+    final newCategory = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CreateCategory(),
+      ),
+    );
+
+    if (newCategory != null) {
+      setState(() {
+        _categories.add(newCategory);
+      });
     }
   }
 
@@ -27,119 +38,77 @@ class InventoryCategory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greenlight,
-      appBar: CustomAppBar(), // Custom app bar for consistency across screens
-      drawer: CustomDrawer(), // Custom drawer for side navigation
+      appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
       body: Row(
         children: [
-          // Side navigation rail for navigating between inventory pages
           SideNavigationRail(
-            selectedIndex:
-                1, // Currently selected index for the navigation rail
-            onDestinationSelected: (int index) {
-              _onDestinationSelected(context, index);
+            selectedIndex: 1,
+            onDestinationSelected: (index) {
+              if (index == 0) {
+                AppNavigator.pushReplacement(context, const InventoryProduct());
+              }
             },
           ),
-          // Main content area for displaying inventory categories
           Expanded(
             child: Padding(
-              padding: EdgeInsets.all(25.0),
-              child: Container(
-                padding:
-                    EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey, width: 1),
-                    left: BorderSide(color: Colors.grey, width: 1),
-                    right: BorderSide(color: Colors.grey, width: 1),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    // Header Row with Title and Search Bar
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Page Title
-                        Text(
-                          'Category',
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: AppColors.primarygreen,
-                            fontWeight: FontWeight.bold,
+              padding: const EdgeInsets.all(25.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Category',
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: AppColors.primarygreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Search or manual input...',
+                            border: OutlineInputBorder(),
                           ),
                         ),
-                        // Search Bar for searching categories
-                        SizedBox(
-                          width: 200,
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Search or manual input...',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      padding: const EdgeInsets.all(10.0),
+                      children: _categories.map((category) {
+                        return CategoryCard(
+                          icon: category['icon'],
+                          name: category['name'],
+                          onTap: () {
+                            // Handle card tap if needed
+                            print('Tapped on ${category['name']}');
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.add, size: 50),
+                          onPressed: () => _navigateToCreateCategory(context),
                         ),
                       ],
                     ),
-                    SizedBox(height: 20), // Space between title and grid
-
-                    // Grid View for Category Cards
-                    Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 3, // Number of columns in the grid
-                        crossAxisSpacing: 20, // Space between grid columns
-                        mainAxisSpacing: 20, // Space between grid rows
-                        padding: EdgeInsets.all(10.0),
-                        childAspectRatio:
-                            0.8, // Aspect ratio to adjust card size
-                        children: List.generate(12, (index) {
-                          return Card(
-                            elevation: 2, // Shadow elevation for card
-                            child: Container(
-                              width: 100, // Fixed width for smaller size
-                              height: 100, // Fixed height for smaller size
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Icon representing the category
-                                  Icon(Icons.cottage,
-                                      size: 50), // Smaller icon size
-                                  SizedBox(
-                                      height:
-                                          10), // Space between icon and text
-                                  // Category name
-                                  Text(
-                                    'Dairy Products', // Replace with the dynamic category name
-                                    style: TextStyle(
-                                        fontSize: 16), // Smaller text size
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
-
-                    // Row for Add Category Icon/Button
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          // Icon Button for adding a new category
-                          IconButton(
-                            icon: Icon(Icons.add, size: 50),
-                            onPressed: () {
-                              AppNavigator.pushReplacement(
-                                  context, CreateCategory());
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

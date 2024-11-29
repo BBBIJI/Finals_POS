@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/presentation/inventory/pages/category.dart';
+import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/create_product.dart';
 import 'package:finalproject_pulse/data/model/product_model.dart';
+import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 
 class InventoryProduct extends StatefulWidget {
   const InventoryProduct({super.key});
@@ -23,19 +25,27 @@ class _InventoryProductState extends State<InventoryProduct> {
     });
   }
 
+  void _onDestinationSelected(int index) {
+    switch (index) {
+      case 0: // Stay on InventoryProduct
+        break;
+      case 1: // Navigate to InventoryCategory
+        AppNavigator.pushReplacement(context, const InventoryCategory());
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greenlight,
       appBar: CustomAppBar(),
-      drawer: Drawer(), // Replace with your custom drawer
+      drawer: CustomDrawer(),
       body: Row(
         children: [
           SideNavigationRail(
             selectedIndex: 0,
-            onDestinationSelected: (index) {
-              // Handle navigation here
-            },
+            onDestinationSelected: _onDestinationSelected,
           ),
           Expanded(
             child: Padding(

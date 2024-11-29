@@ -21,6 +21,23 @@ class _CreateProductState extends State<CreateProduct> {
   String? _category;
   int? _soldBy = 1;
 
+  // Dynamic categories list
+  List<String> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories(); // Load saved categories
+  }
+
+  // Function to load saved categories
+  void _loadCategories() {
+    // Replace this logic with actual data retrieval (e.g., from a database or shared preferences)
+    setState(() {
+      _categories = ['empty']; // Example saved categories
+    });
+  }
+
   void _pickDate() async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
@@ -60,13 +77,13 @@ class _CreateProductState extends State<CreateProduct> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greenlight,
-      appBar: CustomAppBar(), // Custom app bar for the page
+      appBar: CustomAppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Header Row containing back button, title, and save button
+            // Header Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -127,12 +144,12 @@ class _CreateProductState extends State<CreateProduct> {
                         labelText: 'Category',
                         labelStyle: TextStyle(color: AppColors.primarygreen),
                       ),
-                      items: ['Category 1', 'Category 2', 'Category 3']
-                          .map((String category) => DropdownMenuItem<String>(
-                                value: category,
-                                child: Text(category),
-                              ))
-                          .toList(),
+                      items: _categories.map((String category) {
+                        return DropdownMenuItem<String>(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
                       onChanged: (value) => setState(() => _category = value),
                       validator: (value) =>
                           value == null ? 'Select a category' : null,
