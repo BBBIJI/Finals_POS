@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:finalproject_pulse/data/model/product_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
+import 'package:finalproject_pulse/data/model/product_model.dart';
 
 class CreateProduct extends StatefulWidget {
   const CreateProduct({super.key});
@@ -16,28 +18,15 @@ class _CreateProductState extends State<CreateProduct> {
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _unitController = TextEditingController();
+  final TextEditingController _stockController =
+      TextEditingController(); // Added stock controller
 
   final _formKey = GlobalKey<FormState>();
   String? _category;
+  String? _location = "Shelved"; // Default location
   int? _soldBy = 1;
 
-  // Dynamic categories list
-  List<String> _categories = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCategories(); // Load saved categories
-  }
-
-  // Function to load saved categories
-  void _loadCategories() {
-    // Replace this logic with actual data retrieval (e.g., from a database or shared preferences)
-    setState(() {
-      _categories = ['empty']; // Example saved categories
-    });
-  }
-
+  // Pick a date for expiry
   void _pickDate() async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
@@ -53,23 +42,30 @@ class _CreateProductState extends State<CreateProduct> {
     }
   }
 
+  // Save the product data
   void _saveProduct() {
     if (_formKey.currentState?.validate() ?? false) {
-      final String soldBy = _soldBy == 1 ? 'Each' : 'Weight';
+      final String todayDate = DateTime.now().toIso8601String().split('T')[0];
 
-      // Create a Product object from the entered data
+      // Create the Product object
       final product = Product(
         name: _nameController.text,
         category: _category ?? 'Unknown',
+        price: double.parse(_priceController.text),
         expiredDate: _expiredDateController.text,
         barcode: _barcodeController.text,
-        soldBy: soldBy,
-        price: double.parse(_priceController.text),
+        soldBy: 'Each', // You can change this based on your logic
         unit: _unitController.text,
+        stock: int.parse(_stockController.text), // Using the stock controller
+        location: _location ?? 'Shelved', // Using the location dropdown value
+        dateImported: todayDate, // Automatically set to today's date
       );
 
-      // Pass the Product object back to the previous screen
-      Navigator.pop(context, product);
+      // Add the product to InventoryBloc
+      context.read<InventoryBloc>().add(AddProduct(product));
+
+      // Navigate back after saving
+      Navigator.pop(context);
     }
   }
 
@@ -116,131 +112,180 @@ class _CreateProductState extends State<CreateProduct> {
             // Form for product creation
             Form(
               key: _formKey,
-              child: Container(
-                width: 600,
-                padding: const EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey, width: 1),
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Product Name',
-                        labelStyle: TextStyle(color: AppColors.primarygreen),
-                        border: const UnderlineInputBorder(),
-                      ),
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Enter a name'
-                          : null,
+              child: BlocBuilder<InventoryBloc, InventoryState>(
+                builder: (context, state) {
+                  List<String> categories = [];
+                  if (state is InventoryLoaded) {
+                    categories = state.categories.map((e) => e.name).toList();
+                  }
+
+                  return Container(
+                    width: 600,
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 1),
+                      borderRadius: BorderRadius.circular(16.0),
                     ),
-                    const SizedBox(height: 20),
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: 'Category',
-                        labelStyle: TextStyle(color: AppColors.primarygreen),
-                      ),
-                      items: _categories.map((String category) {
-                        return DropdownMenuItem<String>(
-                          value: category,
-                          child: Text(category),
-                        );
-                      }).toList(),
-                      onChanged: (value) => setState(() => _category = value),
-                      validator: (value) =>
-                          value == null ? 'Select a category' : null,
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _expiredDateController,
-                      decoration: InputDecoration(
-                        labelText: 'Expired Date',
-                        labelStyle: TextStyle(color: AppColors.primarygreen),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: _pickDate,
-                        ),
-                      ),
-                      readOnly: true,
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _barcodeController,
-                      decoration: InputDecoration(
-                        labelText: 'Barcode Number',
-                        labelStyle: TextStyle(color: AppColors.primarygreen),
-                        border: const UnderlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _priceController,
-                            decoration: InputDecoration(
-                              labelText: 'Price',
-                              labelStyle:
-                                  TextStyle(color: AppColors.primarygreen),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: 'Product Name',
+                            labelStyle:
+                                TextStyle(color: AppColors.primarygreen),
+                            border: const UnderlineInputBorder(),
+                          ),
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Enter a name'
+                              : null,
+                        ),
+                        const SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: 'Category',
+                            labelStyle:
+                                TextStyle(color: AppColors.primarygreen),
+                          ),
+                          items: categories.map((String category) {
+                            return DropdownMenuItem<String>(
+                              value: category,
+                              child: Text(category),
+                            );
+                          }).toList(),
+                          onChanged: (value) =>
+                              setState(() => _category = value),
+                          validator: (value) =>
+                              value == null ? 'Select a category' : null,
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _expiredDateController,
+                          decoration: InputDecoration(
+                            labelText: 'Expired Date',
+                            labelStyle:
+                                TextStyle(color: AppColors.primarygreen),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.calendar_today),
+                              onPressed: _pickDate,
                             ),
-                            keyboardType: TextInputType.number,
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Enter a price'
-                                : null,
+                          ),
+                          readOnly: true,
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _barcodeController,
+                          decoration: InputDecoration(
+                            labelText: 'Barcode Number',
+                            labelStyle:
+                                TextStyle(color: AppColors.primarygreen),
+                            border: const UnderlineInputBorder(),
                           ),
                         ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _unitController,
-                            decoration: InputDecoration(
-                              labelText: 'Unit',
-                              labelStyle:
-                                  TextStyle(color: AppColors.primarygreen),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _priceController,
+                                decoration: InputDecoration(
+                                  labelText: 'Price',
+                                  labelStyle:
+                                      TextStyle(color: AppColors.primarygreen),
+                                ),
+                                keyboardType: TextInputType.number,
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                        ? 'Enter a price'
+                                        : null,
+                              ),
                             ),
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Enter a unit'
-                                : null,
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _unitController,
+                                decoration: InputDecoration(
+                                  labelText: 'Unit',
+                                  labelStyle:
+                                      TextStyle(color: AppColors.primarygreen),
+                                ),
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                        ? 'Enter a unit'
+                                        : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        // New Stock field
+                        TextFormField(
+                          controller: _stockController,
+                          decoration: InputDecoration(
+                            labelText: 'Stock',
+                            labelStyle:
+                                TextStyle(color: AppColors.primarygreen),
                           ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Enter stock'
+                              : null,
+                        ),
+                        const SizedBox(height: 20),
+                        // Location dropdown
+                        DropdownButtonFormField<String>(
+                          value: _location,
+                          items: const [
+                            DropdownMenuItem(
+                                value: 'Shelved', child: Text('Shelved')),
+                            DropdownMenuItem(
+                                value: 'Warehouse', child: Text('Warehouse')),
+                          ],
+                          onChanged: (value) =>
+                              setState(() => _location = value),
+                          decoration: InputDecoration(
+                            labelText: 'Location',
+                            labelStyle:
+                                TextStyle(color: AppColors.primarygreen),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Text('Sold by',
+                                style: TextStyle(
+                                    color: AppColors.primarygreen,
+                                    fontSize: 16)),
+                            Row(
+                              children: [
+                                Radio(
+                                  value: 1,
+                                  groupValue: _soldBy,
+                                  onChanged: (value) =>
+                                      setState(() => _soldBy = value as int),
+                                ),
+                                const Text('Each'),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Radio(
+                                  value: 2,
+                                  groupValue: _soldBy,
+                                  onChanged: (value) =>
+                                      setState(() => _soldBy = value as int),
+                                ),
+                                const Text('Weight'),
+                              ],
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Text('Sold by',
-                            style: TextStyle(
-                                color: AppColors.primarygreen, fontSize: 16)),
-                        Row(
-                          children: [
-                            Radio(
-                              value: 1,
-                              groupValue: _soldBy,
-                              onChanged: (value) =>
-                                  setState(() => _soldBy = value as int),
-                            ),
-                            const Text('Each'),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Radio(
-                              value: 2,
-                              groupValue: _soldBy,
-                              onChanged: (value) =>
-                                  setState(() => _soldBy = value as int),
-                            ),
-                            const Text('Weight'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],

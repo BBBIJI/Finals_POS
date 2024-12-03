@@ -2,6 +2,7 @@ import 'package:finalproject_pulse/presentation/splashscreen/pages/splashscreen.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/presentation/splashscreen/bloc/splash_cubit.dart';
+import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +17,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => SplashCubit()..appStarted(),
+        ),
+        BlocProvider(
+          create: (context) => InventoryBloc(),
         ),
       ],
       child: MaterialApp(

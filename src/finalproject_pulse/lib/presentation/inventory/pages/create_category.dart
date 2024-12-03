@@ -1,8 +1,9 @@
-// ignore_for_file: prefer_const_constructors
-
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
-import 'package:flutter/material.dart';
+import 'package:finalproject_pulse/data/model/category_model.dart';
+import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
 
 class CreateCategory extends StatefulWidget {
   const CreateCategory({super.key});
@@ -33,6 +34,7 @@ class _CreateCategoryState extends State<CreateCategory> {
     Icons.pie_chart,
     Icons.restaurant,
     Icons.kitchen,
+    // Additional icons here...
   ];
 
   int? selectedIconIndex;
@@ -46,13 +48,17 @@ class _CreateCategoryState extends State<CreateCategory> {
       return;
     }
 
-    // Pass the selected category back to the calling page
-    final newCategory = {
-      'icon': categoryIcons[selectedIconIndex!],
-      'name': _categoryNameController.text,
-    };
+    // Create a Category object
+    final newCategory = Category(
+      name: _categoryNameController.text,
+      icon: categoryIcons[selectedIconIndex!],
+    );
 
-    Navigator.pop(context, newCategory);
+    // Dispatch AddCategory event to the bloc
+    context.read<InventoryBloc>().add(AddCategory(newCategory));
+
+    // Navigate back after saving
+    Navigator.pop(context);
   }
 
   @override

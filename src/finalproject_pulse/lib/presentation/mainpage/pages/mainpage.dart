@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/presentation/mainpage/widget/appbar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
-import 'package:finalproject_pulse/presentation/mainpage/widget/buttonnav.dart';
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
