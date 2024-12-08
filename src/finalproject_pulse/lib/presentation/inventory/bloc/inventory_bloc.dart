@@ -4,6 +4,8 @@ import 'package:finalproject_pulse/data/model/product_model.dart';
 import 'package:finalproject_pulse/data/model/category_model.dart';
 
 // Events
+
+// Events
 abstract class InventoryEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -25,9 +27,7 @@ class AddProduct extends InventoryEvent {
 
 class UpdateProductLocation extends InventoryEvent {
   final Product product;
-
   UpdateProductLocation(this.product);
-
   @override
   List<Object?> get props => [product];
 }
@@ -80,15 +80,11 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     });
 
     on<UpdateProductLocation>((event, emit) {
-      // Find the product and update its location
       final productIndex = _products
           .indexWhere((product) => product.barcode == event.product.barcode);
       if (productIndex != -1) {
-        _products[productIndex] =
-            event.product; // Update the product in the list
-        emit(InventoryLoaded(
-            categories: _categories,
-            products: _products)); // Emit updated products
+        _products[productIndex] = event.product;
+        emit(InventoryLoaded(categories: _categories, products: _products));
       }
     });
 

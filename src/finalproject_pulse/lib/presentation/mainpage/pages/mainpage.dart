@@ -1,8 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
+import 'package:finalproject_pulse/common/widgets/app_bar.dart';
+import 'package:finalproject_pulse/presentation/mainpage/widget/category_box.dart';
 import 'package:flutter/material.dart';
-import 'package:finalproject_pulse/presentation/mainpage/widget/appbar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
+import 'package:finalproject_pulse/presentation/mainpage/widget/product_card.dart';
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
@@ -12,22 +14,19 @@ class Mainpage extends StatefulWidget {
 }
 
 class _MainpageState extends State<Mainpage> {
-  // Cart items map
   final Map<String, CartItem> _cartItems = {
     "1": CartItem(productName: "Product A", quantity: 2, price: 10.0),
     "2": CartItem(productName: "Product B", quantity: 1, price: 20.0),
   };
 
-  // Getter to calculate the total price
   double get _totalPrice {
     return _cartItems.values
         .fold(0, (sum, item) => sum + (item.price * item.quantity));
   }
 
-  // Method to clear the cart
   void _clearCart() {
     setState(() {
-      _cartItems.clear(); // Clear all cart items
+      _cartItems.clear();
     });
   }
 
@@ -35,13 +34,12 @@ class _MainpageState extends State<Mainpage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greenlight,
-      appBar: Appbarmain(),
+      appBar: CustomAppBar(),
       drawer: CustomDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            // Product list (flex 3)
             Expanded(
               flex: 3,
               child: Column(
@@ -56,35 +54,80 @@ class _MainpageState extends State<Mainpage> {
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text("Product List Placeholder"),
-                      ),
+                    flex: 3,
+                    child: BlocBuilder<InventoryBloc, InventoryState>(
+                      builder: (context, state) {
+                        if (state is InventoryLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (state is InventoryLoaded) {
+                          if (state.products.isEmpty) {
+                            return const Center(
+                                child: Text('No products available.'));
+                          }
+                          return GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                            ),
+                            itemCount: state.products.length,
+                            itemBuilder: (context, index) {
+                              final product = state.products[index];
+                              return ProductCard(product: product);
+                            },
+                          );
+                        } else {
+                          return const Center(child: Text('Failed to load.'));
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Bottom Navigation Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      BottomNavButton(label: 'Fruits & Vegetables'),
-                      BottomNavButton(label: 'Dairy Products'),
-                      BottomNavButton(label: 'Bakery Items'),
-                    ],
+                  Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: AppColors.greenlight,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: BlocBuilder<InventoryBloc, InventoryState>(
+                      builder: (context, state) {
+                        if (state is InventoryLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (state is InventoryLoaded) {
+                          if (state.categories.isEmpty) {
+                            return const Center(
+                                child: Text('No categories available.'));
+                          }
+                          return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: state.categories.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: CategoryBox(
+                                    label: state.categories[index].name),
+                              );
+                            },
+                          );
+                        } else {
+                          return const Center(child: Text('Failed to load.'));
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
             VerticalDivider(
-              width: 4, // Adjust the width of the divider
-              color: Colors.grey, // Color of the divider
-              thickness: 0.7, // Thickness of the divider line
+              width: 4,
+              color: Colors.grey,
+              thickness: 0.7,
             ),
-            // Cart summary (flex 1)
             Expanded(
               flex: 1,
               child: Container(
@@ -94,7 +137,6 @@ class _MainpageState extends State<Mainpage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Cart Summary Title and Clear Cart Button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -113,7 +155,6 @@ class _MainpageState extends State<Mainpage> {
                       ],
                     ),
                     const Divider(),
-                    // Display Cart Items
                     Expanded(
                       child: ListView(
                         children: _cartItems.values.map((item) {
@@ -127,7 +168,6 @@ class _MainpageState extends State<Mainpage> {
                       ),
                     ),
                     const Divider(),
-                    // Display Total Price
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -144,7 +184,6 @@ class _MainpageState extends State<Mainpage> {
                       ],
                     ),
                     const SizedBox(height: 8.0),
-                    // Checkout Button
                     ElevatedButton(
                       onPressed: () {
                         // Implement checkout functionality
@@ -166,7 +205,6 @@ class _MainpageState extends State<Mainpage> {
   }
 }
 
-// CartItem Model
 class CartItem {
   final String productName;
   final int quantity;
@@ -177,42 +215,4 @@ class CartItem {
     required this.quantity,
     required this.price,
   });
-}
-
-// Drawer Item Widget
-class DrawerItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const DrawerItem({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.green[900]),
-      title: Text(label, style: TextStyle(color: Colors.black)),
-      onTap: () {
-        // Handle navigation
-      },
-    );
-  }
-}
-
-// Bottom Navigation Button Widget
-class BottomNavButton extends StatelessWidget {
-  final String label;
-
-  const BottomNavButton({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        backgroundColor: Colors.green[700],
-      ),
-      child: Text(label),
-    );
-  }
 }

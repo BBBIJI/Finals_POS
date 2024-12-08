@@ -34,7 +34,6 @@ class _CreateCategoryState extends State<CreateCategory> {
     Icons.pie_chart,
     Icons.restaurant,
     Icons.kitchen,
-    // Additional icons here...
   ];
 
   int? selectedIconIndex;
@@ -77,9 +76,9 @@ class _CreateCategoryState extends State<CreateCategory> {
               children: [
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.arrow_back, size: 50),
+                  icon: const Icon(Icons.arrow_back, size: 50),
                 ),
-                Text(
+                const Text(
                   'Create Category',
                   style: TextStyle(
                     color: AppColors.primarygreen,
@@ -89,7 +88,7 @@ class _CreateCategoryState extends State<CreateCategory> {
                 ),
                 TextButton(
                   onPressed: _saveCategory,
-                  child: Text(
+                  child: const Text(
                     'SAVE',
                     style: TextStyle(
                       color: AppColors.primarygreen,
@@ -100,7 +99,7 @@ class _CreateCategoryState extends State<CreateCategory> {
                 ),
               ],
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -112,12 +111,12 @@ class _CreateCategoryState extends State<CreateCategory> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Icon Selection Grid
             Container(
               height: 250,
               child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 6,
                   crossAxisSpacing: 5,
                   mainAxisSpacing: 5,
@@ -141,7 +140,7 @@ class _CreateCategoryState extends State<CreateCategory> {
                 },
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             // Category Name Input
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
@@ -154,7 +153,7 @@ class _CreateCategoryState extends State<CreateCategory> {
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                  border: OutlineInputBorder(
+                  border: const OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Color.fromARGB(69, 158, 158, 158),
                       width: 2,
