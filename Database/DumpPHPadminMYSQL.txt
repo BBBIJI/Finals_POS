@@ -1,0 +1,126 @@
+CREATE DATABASE IF NOT EXISTS `finals_pos`;
+USE `finals_pos`;
+
+-- Create independent tables first
+DROP TABLE IF EXISTS `category`;
+CREATE TABLE `category` (
+  `category_id` int NOT NULL,
+  `description` varchar(100) NOT NULL,
+  `picture` longblob,
+  PRIMARY KEY (`category_id`)
+);
+
+INSERT INTO `category` (`category_id`, `description`, `picture`) VALUES
+(1, 'Beverages', NULL),
+(2, 'Condiments', NULL),
+(3, 'Dairy Products', NULL),
+(4, 'Grains/Cereals', NULL),
+(5, 'Meat/Poultry', NULL),
+(6, 'Produce', NULL),
+(7, 'Seafood', NULL),
+(8, 'Snacks', NULL),
+(9, 'Frozen Foods', NULL),
+(10, 'Baking Goods', NULL);
+
+DROP TABLE IF EXISTS `supplier`;
+CREATE TABLE `supplier` (
+  `supplier_id` int NOT NULL,
+  `company_name` varchar(45) NOT NULL,
+  `phone_number` varchar(45) NOT NULL,
+  `emial` varchar(45) NOT NULL,
+  `company_address` varchar(45) NOT NULL,
+  `city` varchar(45) NOT NULL,
+  `state` varchar(45) NOT NULL,
+  `country` varchar(45) NOT NULL,
+  `postal_code` varchar(45) NOT NULL,
+  PRIMARY KEY (`supplier_id`)
+);
+
+INSERT INTO `supplier` (`supplier_id`, `company_name`, `phone_number`, `emial`, `company_address`, `city`, `state`, `country`, `postal_code`) VALUES
+(1, 'Fresh Foods Co.', '123-456-7890', 'contact@freshfoods.com', '123 Green St', 'Los Angeles', 'CA', 'USA', '90001'),
+(2, 'Global Spices', '234-567-8901', 'info@globalspices.com', '456 Spice Lane', 'Chicago', 'IL', 'USA', '60605'),
+(3, 'Dairy World', '345-678-9012', 'sales@dairyworld.com', '789 Dairy Ave', 'Madison', 'WI', 'USA', '53703'),
+(4, 'Meat Market', '456-789-0123', 'support@meatmarket.com', '321 Meat St', 'Houston', 'TX', 'USA', '77002'),
+(5, 'Seafood Delights', '567-890-1234', 'customer_orders@seafoodd.com', '654 Ocean Blvd', 'Seattle', 'WA', 'USA', '98101');
+
+DROP TABLE IF EXISTS `staff`;
+CREATE TABLE `staff` (
+  `staff_id` int NOT NULL,
+  `username` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `first_name` varchar(45) NOT NULL,
+  `last_name` varchar(45) NOT NULL,
+  `birthday` date NOT NULL,
+  `admin` int NOT NULL,
+  PRIMARY KEY (`staff_id`)
+);
+
+INSERT INTO `staff` (`staff_id`, `username`, `password`, `first_name`, `last_name`, `birthday`, `admin`) VALUES
+(1, 'admin1', 'pass123', 'Alice', 'Smith', '1990-05-15', 1),
+(2, 'cashier1', 'cashier123', 'Bob', 'Jones', '1995-07-22', 0),
+(3, 'cashier2', 'cashier456', 'Charlie', 'Brown', '1998-03-10', 0),
+(4, 'manager1', 'manager123', 'David', 'White', '1988-11-30', 1);
+
+-- Create dependent tables after independent ones
+DROP TABLE IF EXISTS `product`;
+CREATE TABLE `product` (
+  `product_id` int NOT NULL,
+  `category_id` int NOT NULL,
+  `supplier_id` int NOT NULL,
+  `product_name` varchar(45) NOT NULL,
+  `unit_price` double NOT NULL,
+  PRIMARY KEY (`product_id`),
+  KEY `category_id_idx` (`category_id`),
+  KEY `supplier_id_idx` (`supplier_id`),
+  CONSTRAINT `category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`),
+  CONSTRAINT `supplier_id` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`supplier_id`)
+);
+
+INSERT INTO `product` (`product_id`, `category_id`, `supplier_id`, `product_name`, `unit_price`) VALUES
+(1, 1, 1, 'Cola', 1.5),
+(2, 1, 1, 'Orange Juice', 2.0),
+(3, 3, 3, 'Cheddar Cheese', 3.0),
+(4, 3, 3, 'Yogurt', 1.0),
+(5, 5, 4, 'Chicken Breast', 5.0),
+(6, 7, 5, 'Salmon', 7.0),
+(7, 4, 2, 'Rice', 0.8),
+(8, 2, 2, 'Ketchup', 1.2),
+(9, 8, 1, 'Potato Chips', 1.8),
+(10, 9, 1, 'Frozen Pizza', 4.0);
+
+DROP TABLE IF EXISTS `storage`;
+CREATE TABLE `storage` (
+  `storage_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `exp_date` date NOT NULL,
+  `item_quantity` int NOT NULL,
+  PRIMARY KEY (`storage_id`),
+  KEY `product_id_idx` (`product_id`),
+  CONSTRAINT `product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`)
+);
+
+INSERT INTO `storage` (`storage_id`, `product_id`, `exp_date`, `item_quantity`) VALUES
+(1, 1, '2024-12-31', 100),
+(2, 3, '2024-11-15', 50),
+(3, 5, '2024-10-10', 200),
+(4, 7, '2025-01-01', 300),
+(5, 9, '2024-09-20', 150);
+
+DROP TABLE IF EXISTS `customer_order`;
+CREATE TABLE `customer_order` (
+  `customer_order_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `payment_type` varchar(45) NOT NULL,
+  `item_quantity` int NOT NULL,
+  `total_cost` double NOT NULL,
+  PRIMARY KEY (`customer_order_id`),
+  KEY `product_id_idx` (`product_id`),
+  CONSTRAINT `fk_customer_order_product` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`)
+);
+
+INSERT INTO `customer_order` (`customer_order_id`, `product_id`, `payment_type`, `item_quantity`, `total_cost`) VALUES
+(1, 1, 'Credit Card', 2, 3.0),
+(2, 5, 'Cash', 3, 15.0),
+(3, 7, 'Credit Card', 5, 4.0),
+(4, 9, 'Mobile Payment', 1, 1.8),
+(5, 6, 'Cash', 2, 14.0);
