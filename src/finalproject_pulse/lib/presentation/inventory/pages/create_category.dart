@@ -1,3 +1,4 @@
+import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
@@ -75,7 +76,7 @@ class _CreateCategoryState extends State<CreateCategory> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => AppNavigator.pop(context),
                   icon: const Icon(Icons.arrow_back, size: 50),
                 ),
                 const Text(

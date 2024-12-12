@@ -1,3 +1,4 @@
+import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/create_category.dart';
@@ -103,12 +104,7 @@ class InventoryCategory extends StatelessWidget {
                         IconButton(
                           icon: const Icon(Icons.add, size: 50),
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CreateCategory(),
-                              ),
-                            );
+                            AppNavigator.push(context, const CreateCategory());
                           },
                         ),
                       ],

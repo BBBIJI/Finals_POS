@@ -38,20 +38,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             top: 8.0, left: 16.0, right: 16.0), // Padding for title
         child: Image.asset(
           'assets/images/IconWhite.png', // Replace with your logo image asset
-          height: 60, // Adjust logo size as needed
+          height: 60,
           width: 60,
         ),
       ),
-      centerTitle: true, // Ensures the logo is centered in AppBar
+      centerTitle: true,
       actions: [
         Padding(
-          padding: const EdgeInsets.only(
-              top: 8.0, right: 12.0), // Padding for avatar
+          padding: const EdgeInsets.only(top: 8.0, right: 12.0),
           child: CircleAvatar(
             backgroundImage: AssetImage(
-              'assets/profile.png', // Replace with your profile image asset
+              'assets/profile.png',
             ),
-            radius: 20, // Adjust CircleAvatar size as needed
+            radius: 20,
           ),
         ),
       ],
@@ -64,8 +63,7 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: AppColors
-            .primarygreen, // Matches the background color of the drawer
+        color: AppColors.primarygreen,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -80,38 +78,31 @@ class CustomDrawer extends StatelessWidget {
                     icon: Icons.shopping_cart,
                     label: 'POS',
                     onTap: () {
-                      AppNavigator.pushReplacement(
-                          context, Mainpage()); // Define navigation logic
+                      AppNavigator.push(context, Mainpage());
                     },
                   ),
                   _buildDrawerItem(
                     icon: Icons.inventory,
                     label: 'Inventory',
                     onTap: () {
-                      AppNavigator.pushReplacement(context,
-                          InventoryProduct()); // Define navigation logic
+                      AppNavigator.push(context, InventoryProduct());
                     },
                   ),
                   _buildDrawerItem(
                     icon: Icons.receipt,
                     label: 'Receipts',
-                    onTap: () {
-                      // Define navigation logic
-                    },
+                    onTap: () {},
                   ),
                   _buildDrawerItem(
                     icon: Icons.report,
                     label: 'Staff Report',
-                    onTap: () {
-                      // Define navigation logic
-                    },
+                    onTap: () {},
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(
-                  16.0), // Adjust padding for the footer logo
+              padding: const EdgeInsets.all(16.0),
               child: Text(
                 'Pulse POS System',
                 style: TextStyle(

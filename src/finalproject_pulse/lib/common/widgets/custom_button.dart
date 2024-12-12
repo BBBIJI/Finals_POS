@@ -31,9 +31,7 @@ class CustomButton extends StatelessWidget {
         minimumSize: width != null && height != null
             ? Size(width!, height!)
             : null, // Dynamically adapt size
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
+        shape: const RoundedRectangleBorder(),
       ),
       child: Text(
         text,

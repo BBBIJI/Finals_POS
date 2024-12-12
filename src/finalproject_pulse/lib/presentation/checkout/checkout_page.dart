@@ -1,10 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
-import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/common/widgets/custom_button.dart';
+import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
 
 class Checkout extends StatefulWidget {
-  const Checkout({super.key});
+  final Map<String, CartItem> cartItems;
+  final double totalPrice;
+
+  const Checkout(
+      {super.key, required this.cartItems, required this.totalPrice});
 
   @override
   _CheckoutState createState() => _CheckoutState();
@@ -13,81 +19,67 @@ class Checkout extends StatefulWidget {
 class _CheckoutState extends State<Checkout> {
   bool isCashSelected = false;
   bool isCardSelected = false;
-
-  // Sample data for cart items
-  Map<String, CartItem> _cartItems = {
-    'item1': CartItem(productName: 'Product 1', quantity: 1, price: 10.0),
-    'item2': CartItem(productName: 'Product 2', quantity: 2, price: 15.0),
-  };
-
-  // Calculate total price for all items in the cart
-  double get _totalPrice {
-    return _cartItems.values
-        .fold(0, (sum, item) => sum + (item.price * item.quantity));
-  }
-
-  // Clear the cart items
-  void _clearCart() {
-    setState(() {
-      _cartItems.clear();
-    });
-  }
+  TextEditingController _paymentController = TextEditingController();
 
   // Update the selected payment method
   void onButtonTapped(String button) {
     setState(() {
       if (button == 'cash') {
-        isCashSelected = !isCashSelected;
+        isCashSelected = true;
         isCardSelected = false;
+        _paymentController.clear(); // Clear the input when switching to cash
       } else if (button == 'card') {
-        isCardSelected = !isCardSelected;
+        isCardSelected = true;
         isCashSelected = false;
+        _paymentController.clear(); // Clear the input when switching to card
       }
     });
+  }
+
+  // Card validation logic for 16 digits
+  void validateCardNumber(String value) {
+    if (value.length != 16) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Invalid Card Number'),
+          content: const Text('Card number must be exactly 16 digits.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greenlight,
-      appBar: CustomAppBar(), // Custom app bar widget
-      drawer: CustomDrawer(), // Custom drawer widget for navigation
+      appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
       body: Row(
         children: [
-          // Cart Summary Section
           Expanded(
             flex: 1,
             child: Container(
-              width: 300.0,
-              color: AppColors.greenlight,
               padding: const EdgeInsets.all(8.0),
+              color: AppColors.greenlight,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Cart Summary Title and Clear Cart Button
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Cart Summary',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      // Clear cart button to remove all items from the cart
-                      TextButton(
-                        onPressed: _clearCart,
-                        child: const Text(
-                          'Clear Cart',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
+                  const Text(
+                    'Cart Summary',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const Divider(),
                   // Display Cart Items List
                   Expanded(
                     child: ListView(
-                      children: _cartItems.values.map((item) {
+                      children: widget.cartItems.values.map((item) {
                         return ListTile(
                           title: Text(item.productName),
                           subtitle: Text('Quantity: ${item.quantity}'),
@@ -108,30 +100,17 @@ class _CheckoutState extends State<Checkout> {
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '\$${_totalPrice.toStringAsFixed(2)}',
+                        '\$${widget.totalPrice.toStringAsFixed(2)}',
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8.0),
-                  // Checkout Button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Implement checkout functionality
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: Colors.green,
-                    ),
-                    child: const Center(child: Text('Checkout')),
-                  ),
                 ],
               ),
             ),
           ),
-          // Vertical Divider between Cart and Payment Sections
-          VerticalDivider(
+          const VerticalDivider(
             width: 4,
             color: Colors.grey,
             thickness: 0.7,
@@ -153,16 +132,15 @@ class _CheckoutState extends State<Checkout> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      // Total Amount Text
                       const Text(
                         'Total amount due',
                         style: TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      const Text(
-                        'NT', // Currency or Amount representation (could be changed)
-                        style: TextStyle(
+                      Text(
+                        '\$${widget.totalPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(
                             fontSize: 40, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 30),
@@ -231,7 +209,7 @@ class _CheckoutState extends State<Checkout> {
                         ],
                       ),
                       const SizedBox(height: 40),
-                      // Card Number Input Field (visible only if card is selected)
+                      // Conditional Input Field (Cash or Card)
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
@@ -244,46 +222,88 @@ class _CheckoutState extends State<Checkout> {
                             ),
                           ),
                           child: TextField(
+                            controller:
+                                _paymentController, // Use the controller
                             decoration: InputDecoration(
-                              hintText: "Enter card number",
+                              hintText: isCardSelected
+                                  ? "Enter card number"
+                                  : "Amount received",
                               border: InputBorder.none,
                               hintStyle: TextStyle(color: Colors.grey),
                               contentPadding:
                                   EdgeInsets.symmetric(horizontal: 16.0),
                             ),
+                            keyboardType: TextInputType.number,
+                            maxLength: isCardSelected
+                                ? 19
+                                : null, // Set maxLength for card only
+                            inputFormatters: isCardSelected
+                                ? [
+                                    FilteringTextInputFormatter
+                                        .digitsOnly, // Only digits allowed
+                                    TextInputFormatter.withFunction(
+                                      (oldValue, newValue) {
+                                        final text = newValue.text.replaceAll(
+                                            RegExp(r'\D'),
+                                            ''); // Remove non-digits
+                                        String formatted = '';
+                                        for (int i = 0; i < text.length; i++) {
+                                          if (i > 0 && i % 4 == 0) {
+                                            formatted += '-';
+                                          }
+                                          formatted += text[i];
+                                        }
+                                        return newValue.copyWith(
+                                          text: formatted,
+                                        );
+                                      },
+                                    ),
+                                  ]
+                                : [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    TextInputFormatter.withFunction(
+                                      (oldValue, newValue) {
+                                        final newText = newValue.text
+                                            .replaceAll(
+                                                RegExp(
+                                                    r'(?<=\d)(?=(\d{3})+\b)'),
+                                                ',');
+                                        return newValue.copyWith(text: newText);
+                                      },
+                                    ),
+                                  ],
+                            onChanged: (value) {
+                              if (isCardSelected) {
+                                // Validate only if card number is entered
+                                if (value.length == 16) {
+                                  validateCardNumber(
+                                      value); // Validate once 16 digits are entered
+                                }
+                              }
+                            },
                           ),
                         ),
                       ),
                       const SizedBox(height: 60),
                       // Final Checkout Button
-                      CustomButton(
-                        text: "Checkout",
-                        color: Colors.white,
-                        onPressed: () {
-                          // Implement checkout functionality
-                        },
-                      ),
+                      SizedBox(
+                        width: 310,
+                        height: 55,
+                        child: CustomButton(
+                          text: "Checkout",
+                          onPressed: () {
+                            // Implement your checkout logic here
+                          },
+                        ),
+                      )
                     ],
                   ),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
-}
-
-// Define CartItem class if not already defined
-class CartItem {
-  final String productName; // Product name in the cart
-  final int quantity; // Quantity of the product
-  final double price; // Price of the product
-
-  CartItem({
-    required this.productName,
-    required this.quantity,
-    required this.price,
-  });
 }
