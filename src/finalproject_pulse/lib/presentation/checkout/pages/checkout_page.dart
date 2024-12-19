@@ -1,16 +1,21 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
-import 'package:finalproject_pulse/common/widgets/custom_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
+import 'package:finalproject_pulse/presentation/checkout/widgets/popup.dart';
+import 'package:finalproject_pulse/common/widgets/custom_button.dart';
+import 'package:finalproject_pulse/presentation/checkout/pages/receipt.dart';
 
 class Checkout extends StatefulWidget {
   final Map<String, CartItem> cartItems;
   final double totalPrice;
 
-  const Checkout(
-      {super.key, required this.cartItems, required this.totalPrice});
+  const Checkout({
+    super.key,
+    required this.cartItems,
+    required this.totalPrice,
+  });
 
   @override
   _CheckoutState createState() => _CheckoutState();
@@ -20,6 +25,20 @@ class _CheckoutState extends State<Checkout> {
   bool isCashSelected = false;
   bool isCardSelected = false;
   TextEditingController _paymentController = TextEditingController();
+
+  // This counter keeps track of the last order number
+  static int _orderCounter = 1;
+
+  // Callback to handle saving receipts
+  void _onSaveReceipt(Map<String, dynamic> receipt) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            Receipt(receipt: receipt), // Pass the receipt data
+      ),
+    );
+  }
 
   // Update the selected payment method
   void onButtonTapped(String button) {
@@ -36,23 +55,30 @@ class _CheckoutState extends State<Checkout> {
     });
   }
 
-  // Card validation logic for 16 digits
-  void validateCardNumber(String value) {
-    if (value.length != 16) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Invalid Card Number'),
-          content: const Text('Card number must be exactly 16 digits.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
+  void _showPaymentDialog() {
+    // Remove commas from the input before parsing
+    String rawInput = _paymentController.text.replaceAll(',', '');
+    double? receivedAmount = isCashSelected ? double.tryParse(rawInput) : null;
+
+    double? change = isCashSelected && receivedAmount != null
+        ? receivedAmount - widget.totalPrice
+        : null;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return PaymentDialog(
+          isCash: isCashSelected,
+          totalAmount: widget.totalPrice,
+          receivedAmount: receivedAmount,
+          change: change,
+          cartItems: widget.cartItems,
+          onSaveReceipt: _onSaveReceipt, // Pass the callback
+          orderNumber:
+              '#${_orderCounter.toString().padLeft(3, '0')}', // Order number is sequential
+        );
+      },
+    );
   }
 
   @override
@@ -95,7 +121,7 @@ class _CheckoutState extends State<Checkout> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        'Total:',
+                        'Total: ',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
@@ -272,15 +298,6 @@ class _CheckoutState extends State<Checkout> {
                                       },
                                     ),
                                   ],
-                            onChanged: (value) {
-                              if (isCardSelected) {
-                                // Validate only if card number is entered
-                                if (value.length == 16) {
-                                  validateCardNumber(
-                                      value); // Validate once 16 digits are entered
-                                }
-                              }
-                            },
                           ),
                         ),
                       ),
@@ -291,11 +308,9 @@ class _CheckoutState extends State<Checkout> {
                         height: 55,
                         child: CustomButton(
                           text: "Checkout",
-                          onPressed: () {
-                            // Implement your checkout logic here
-                          },
+                          onPressed: _showPaymentDialog,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),

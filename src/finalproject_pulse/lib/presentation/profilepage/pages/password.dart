@@ -1,4 +1,4 @@
-import 'package:finalproject_pulse/presentation/profilepage/pages/password.dart';
+import 'package:finalproject_pulse/presentation/profilepage/pages/profilepage.dart';
 import 'package:finalproject_pulse/presentation/profilepage/pages/schedule.dart';
 import 'package:finalproject_pulse/presentation/profilepage/pages/session.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +7,8 @@ import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 
-class Profilepage extends StatelessWidget {
-  const Profilepage({super.key});
+class Password extends StatelessWidget {
+  const Password({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +30,16 @@ class Profilepage extends StatelessWidget {
                       ListTile(
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                        leading: Image.asset('assets/Images/User_on.png'),
+                        leading: Image.asset('assets/Images/User_off.png'),
                         title: Text(
                           'User Profile',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Color(0xffF3ED92)),
+                          style: TextStyle(color: Colors.white),
                         ),
+                        onTap: () {
+                          AppNavigator.pushReplacement(
+                              context, const Profilepage());
+                        },
                       ),
                       ListTile(
                         contentPadding:
@@ -54,11 +58,11 @@ class Profilepage extends StatelessWidget {
                       ListTile(
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                        leading: Image.asset('assets/Images/password_off.png'),
+                        leading: Image.asset('assets/Images/password_on.png'),
                         title: Text(
                           'Password',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Color(0xffF3ED92)),
                         ),
                         onTap: () {
                           AppNavigator.pushReplacement(
@@ -106,16 +110,14 @@ class Profilepage extends StatelessWidget {
                     ),
                   ],
                 ),
-                height: 1000,
-                width: 900,
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(40),
+                          padding: EdgeInsets.all(40),
                           child: Text(
-                            "Profile",
+                            "Password",
                             style: TextStyle(fontSize: 36),
                           ),
                         ),
@@ -124,100 +126,95 @@ class Profilepage extends StatelessWidget {
                     Row(
                       children: [
                         Padding(
-                            padding: const EdgeInsets.all(30),
-                            child: MaterialButton(
-                              onPressed: () {
-                                AppNavigator.pushReplacement(
-                                    context, const Profilepage());
-                              },
-                              color: Colors.blue,
-                              textColor: Colors.white,
-                              child: const Icon(
-                                Icons.camera_alt,
-                                size: 250,
-                              ),
-                              padding: EdgeInsets.all(16),
-                              shape: CircleBorder(),
-                            )),
-                        Column(
-                          children: [
-                            Text(
-                              "Upload New Image",
-                              style: TextStyle(fontSize: 30),
-                            ),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(30),
-                                  child: ElevatedButton(
-                                      onPressed: null, child: Text("test")),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(30),
-                                  child: ElevatedButton(
-                                      onPressed: null, child: Text("test")),
-                                ),
-                              ],
-                            )
-                          ],
+                          padding: EdgeInsets.only(
+                            top: 20,
+                            left: 20,
+                            right: 20,
+                          ),
+                          child: Text(
+                            "Old Password",
+                            style: TextStyle(fontSize: 24),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Password',
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: 20,
+                            left: 20,
+                            right: 20,
+                          ),
+                          child: Text(
+                            "New Password",
+                            style: TextStyle(fontSize: 24),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Password',
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: 20,
+                            left: 20,
+                            right: 20,
+                          ),
+                          child: Text(
+                            "Confirm New Password",
+                            style: TextStyle(fontSize: 24),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Password',
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(30),
+                          child: ElevatedButton(
+                              onPressed: null, child: Text("Confirm")),
                         )
                       ],
-                    ),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                            top: 20,
-                            left: 20,
-                            right: 20,
-                          ),
-                          child: Text(
-                            "Username",
-                            style: TextStyle(fontSize: 24),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                      child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Username',
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                            top: 20,
-                            left: 20,
-                            right: 20,
-                          ),
-                          child: Text(
-                            "Email",
-                            style: TextStyle(fontSize: 24),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                      child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Username@gmail.com',
-                        ),
-                      ),
-                    ),
+                    )
                   ],
                 ),
+                height: 1000,
+                width: 900,
               ),
             )
           ],
         ));
+    ;
   }
 }

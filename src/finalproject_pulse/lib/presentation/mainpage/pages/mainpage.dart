@@ -7,7 +7,7 @@ import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.da
 import 'package:finalproject_pulse/presentation/mainpage/widget/product_card.dart';
 import 'package:finalproject_pulse/presentation/mainpage/widget/category_box.dart';
 import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
-import 'package:finalproject_pulse/presentation/checkout/checkout_page.dart'; // Import Checkout page
+import 'package:finalproject_pulse/presentation/checkout/pages/checkout_page.dart'; // Import Checkout page
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});

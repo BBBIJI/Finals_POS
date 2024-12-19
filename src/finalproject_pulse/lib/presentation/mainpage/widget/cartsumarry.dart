@@ -1,5 +1,5 @@
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
-import 'package:finalproject_pulse/presentation/checkout/checkout_page.dart';
+import 'package:finalproject_pulse/presentation/checkout/pages/checkout_page.dart';
 
 import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 import 'package:finalproject_pulse/common/widgets/custom_button.dart';

@@ -1,8 +1,10 @@
 // lib/custom_widgets.dart
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:finalproject_pulse/presentation/checkout/pages/receipt.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
 import 'package:finalproject_pulse/presentation/mainpage/pages/mainpage.dart';
+import 'package:finalproject_pulse/presentation/profilepage/pages/profilepage.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
@@ -45,14 +47,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       actions: [
         Padding(
-          padding: const EdgeInsets.only(top: 8.0, right: 12.0),
-          child: CircleAvatar(
-            backgroundImage: AssetImage(
-              'assets/profile.png',
-            ),
-            radius: 20,
-          ),
-        ),
+            padding: const EdgeInsets.only(top: 8.0, right: 12.0),
+            child: MaterialButton(
+              onPressed: () {
+                AppNavigator.pushReplacement(context, const Profilepage());
+              },
+              color: Colors.blue,
+              textColor: Colors.white,
+              child: const Icon(
+                Icons.camera_alt,
+                size: 24,
+              ),
+              padding: EdgeInsets.all(16),
+              shape: CircleBorder(),
+            )),
       ],
     );
   }

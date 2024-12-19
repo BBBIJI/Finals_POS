@@ -12,7 +12,7 @@ class AppNavigator {
     );
   }
 
-  // push replacement of current route with new route
+  // Push and replace the current route with a new route
   static void pushReplacement(BuildContext context, Widget widget,
       {Object? arguments}) {
     Navigator.pushReplacement(
@@ -24,7 +24,7 @@ class AppNavigator {
     );
   }
 
-  // push and remove all previous routes
+  // Push and remove all previous routes
   static void pushAndRemoveAll(BuildContext context, Widget widget,
       {Object? arguments}) {
     Navigator.pushAndRemoveUntil(
@@ -37,8 +37,28 @@ class AppNavigator {
     );
   }
 
-  // pop navigator
+  // Pop the current route
   static void pop(BuildContext context, {dynamic result}) {
     Navigator.pop(context, result);
+  }
+
+  // Push with a fade transition
+  static void pushWithFade(BuildContext context, Widget widget,
+      {Object? arguments,
+      Duration duration = const Duration(milliseconds: 300)}) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => widget,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: duration,
+        settings: RouteSettings(arguments: arguments),
+      ),
+    );
   }
 }

@@ -1,17 +1,26 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 import 'package:finalproject_pulse/presentation/mainpage/pages/mainpage.dart';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String _msg = "";
+
+  @override
   Widget build(BuildContext context) {
-    // Fetch screen dimensions
     double screenwidth = MediaQuery.of(context).size.width;
     double screenheight = MediaQuery.of(context).size.height;
 
@@ -96,6 +105,7 @@ class LoginScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: TextField(
+                                controller: _usernameController,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   enabledBorder: InputBorder.none,
@@ -115,7 +125,6 @@ class LoginScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
                                   'Password',
@@ -125,8 +134,6 @@ class LoginScreen extends StatelessWidget {
                                     fontSize: 18,
                                   ),
                                 ),
-                                // Forgot password option
-                                Text('forgot password?')
                               ],
                             ),
                             Container(
@@ -135,6 +142,7 @@ class LoginScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: TextField(
+                                controller: _passwordController,
                                 obscureText: true, // Hide password characters
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
@@ -154,11 +162,7 @@ class LoginScreen extends StatelessWidget {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
-                              // Navigate to Mainpage upon successful login
-                              AppNavigator.pushReplacement(
-                                  context, const Mainpage());
-                            },
+                            onPressed: _login,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primarygreen,
                               padding: const EdgeInsets.symmetric(
@@ -179,6 +183,14 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 30),
+                        Text(
+                          _msg,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.red,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -189,5 +201,41 @@ class LoginScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _login() async {
+    String url = "http://localhost/flutter/api/login.php";
+
+    final Map<String, dynamic> queryParams = {
+      "username": _usernameController.text,
+      "password": _passwordController.text
+    };
+
+    try {
+      http.Response response =
+          await http.get(Uri.parse(url).replace(queryParameters: queryParams));
+
+      if (response.statusCode == 200) {
+        var user = jsonDecode(response.body); //return type list<Map>
+        if (user.isNotEmpty) {
+          setState(() {
+            _msg = user[0]['first_name'];
+            AppNavigator.pushReplacement(context, const Mainpage());
+          });
+        } else {
+          setState(() {
+            _msg = "Invalid Username or password.";
+          });
+        }
+      } else {
+        setState(() {
+          _msg = "${response.statusCode} ${response.reasonPhrase}";
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _msg = "$error";
+      });
+    }
   }
 }
