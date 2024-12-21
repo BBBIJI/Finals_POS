@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:finalproject_pulse/data/model/product_model.dart';
 import 'package:finalproject_pulse/data/model/category_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 // Events
 
@@ -88,8 +90,35 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
       }
     });
 
-    on<FetchData>((event, emit) {
+    on<FetchData>((event, emit) async {
+      emit(InventoryLoading()); // Emit loading state
+
+      try {
+        // Fetch products from the API
+        List products = await getProducts();
+
+        // Assuming you have a way to parse products into `Product` objects
+        _products.clear();
+        _products.addAll(products.map((p) => Product.fromJson(p)).toList());
+
+        emit(InventoryLoaded(categories: _categories, products: _products));
+      } catch (error) {
+        emit(InventoryError('Failed to fetch products: $error'));
+      }
       emit(InventoryLoaded(categories: _categories, products: _products));
     });
+  }
+
+  Future<List> getProducts() async {
+    String url = "http://localhost/flutter/api/getAllProducts.php";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var products = jsonDecode(response.body);
+      return products;
+    } else {
+      return [];
+    }
   }
 }

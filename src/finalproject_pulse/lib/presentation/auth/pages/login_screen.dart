@@ -219,7 +219,6 @@ class _LoginScreenState extends State<LoginScreen> {
         var user = jsonDecode(response.body); //return type list<Map>
         if (user.isNotEmpty) {
           setState(() {
-            _msg = user[0]['first_name'];
             AppNavigator.pushReplacement(context, const Mainpage());
           });
         } else {
