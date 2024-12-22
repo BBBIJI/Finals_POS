@@ -7,5 +7,6 @@ class CartItem {
     required this.productName,
     required this.price,
     required this.quantity,
+    required String barcode,
   });
 }

@@ -1,4 +1,5 @@
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';

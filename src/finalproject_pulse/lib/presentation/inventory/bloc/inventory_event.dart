@@ -7,9 +7,6 @@ abstract class InventoryEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Event to load products
-class LoadProducts extends InventoryEvent {}
-
 // Event to add a product
 class AddProduct extends InventoryEvent {
   final Product product;

@@ -1,7 +1,3 @@
-import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
-import 'package:finalproject_pulse/presentation/checkout/pages/checkout_page.dart';
-
-import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
 import 'package:finalproject_pulse/common/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
@@ -10,14 +6,14 @@ class CartSummary extends StatelessWidget {
   final Map<String, CartItem> cartItems;
   final double totalPrice;
   final VoidCallback clearCart;
-  final VoidCallback onCheckout; // Use this callback for navigation
+  final VoidCallback onCheckout; // Checkout callback passed from MainPage
 
   const CartSummary({
     Key? key,
     required this.cartItems,
     required this.totalPrice,
     required this.clearCart,
-    required this.onCheckout,
+    required this.onCheckout, // Callback passed to handle checkout navigation
   }) : super(key: key);
 
   @override
@@ -71,13 +67,13 @@ class CartSummary extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8.0),
-        // Original Checkout Button using SizedBox
+        // Checkout Button
         SizedBox(
           width: double.infinity, // Make the button span full width
           height: 50,
           child: CustomButton(
             text: "Checkout",
-            onPressed: onCheckout, // Use the passed onCheckout callback
+            onPressed: onCheckout, // Trigger checkout navigation
           ),
         ),
       ],

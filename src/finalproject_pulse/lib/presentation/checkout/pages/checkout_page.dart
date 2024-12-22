@@ -1,21 +1,24 @@
-import 'package:finalproject_pulse/common/widgets/app_bar.dart';
-import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_bloc.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
-import 'package:finalproject_pulse/presentation/checkout/widgets/popup.dart';
+import 'package:finalproject_pulse/presentation/checkout/widgets/popup.dart'; // Use PaymentDialog
+import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
+import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/common/widgets/custom_button.dart';
-import 'package:finalproject_pulse/presentation/checkout/pages/receipt.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Checkout extends StatefulWidget {
   final Map<String, CartItem> cartItems;
   final double totalPrice;
+  final Function onReceiptAdded;
 
   const Checkout({
-    super.key,
+    Key? key,
     required this.cartItems,
     required this.totalPrice,
-  });
+    required this.onReceiptAdded, // Callback to pass receipt
+  }) : super(key: key);
 
   @override
   _CheckoutState createState() => _CheckoutState();
@@ -25,60 +28,112 @@ class _CheckoutState extends State<Checkout> {
   bool isCashSelected = false;
   bool isCardSelected = false;
   TextEditingController _paymentController = TextEditingController();
+  int _orderNumber = 1; // Start order numbers from #001
 
-  // This counter keeps track of the last order number
-  static int _orderCounter = 1;
-
-  // Callback to handle saving receipts
-  void _onSaveReceipt(Map<String, dynamic> receipt) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            Receipt(receipt: receipt), // Pass the receipt data
-      ),
-    );
+  String _generateOrderNumber() {
+    return '#${_orderNumber.toString().padLeft(3, '0')}'; // Format as #001, #002, etc.
   }
 
-  // Update the selected payment method
-  void onButtonTapped(String button) {
-    setState(() {
-      if (button == 'cash') {
-        isCashSelected = true;
-        isCardSelected = false;
-        _paymentController.clear(); // Clear the input when switching to cash
-      } else if (button == 'card') {
-        isCardSelected = true;
-        isCashSelected = false;
-        _paymentController.clear(); // Clear the input when switching to card
-      }
-    });
+  // Process Cash Payment
+  void _processCashPayment(BuildContext context) {
+    double cashProvided = double.tryParse(_paymentController.text) ?? 0;
+    if (cashProvided < widget.totalPrice) {
+      // Show error: Not enough cash
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Not enough cash provided')),
+      );
+      return;
+    } else {
+      double change = cashProvided - widget.totalPrice;
+
+      // Generate dynamic date and time
+      DateTime now = DateTime.now();
+      String date = now.toLocal().toString().split(' ')[0]; // Current date
+      String time =
+          "${now.hour}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}"; // Current time
+
+      // Create a Receipt for cash payment
+      String orderNumber = _generateOrderNumber();
+      Map<String, dynamic> receipt = {
+        'orderNumber': orderNumber,
+        'date': date, // Current date
+        'time': time, // Exact current time
+        'cartItems': widget.cartItems,
+        'totalAmount': widget.totalPrice,
+        'cashReceived': cashProvided,
+        'change': change,
+      };
+
+      // Show pop-up dialog with change
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return PaymentDialog(
+            isCash: true,
+            totalAmount: widget.totalPrice,
+            cartItems: widget.cartItems,
+            orderNumber: orderNumber,
+            change: change,
+          );
+        },
+      );
+
+      // Increment order number for next receipt
+      setState(() {
+        _orderNumber++;
+      });
+    }
   }
 
-  void _showPaymentDialog() {
-    // Remove commas from the input before parsing
-    String rawInput = _paymentController.text.replaceAll(',', '');
-    double? receivedAmount = isCashSelected ? double.tryParse(rawInput) : null;
+  // Process Card Payment
+  void _processCardPayment(BuildContext context) {
+    String cardNumber = _paymentController.text;
+    if (cardNumber.length != 16) {
+      // Show error: Invalid card number
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid card number')),
+      );
+      return;
+    }
 
-    double? change = isCashSelected && receivedAmount != null
-        ? receivedAmount - widget.totalPrice
-        : null;
+    // Generate dynamic date and time
+    DateTime now = DateTime.now();
+    String date = now.toLocal().toString().split(' ')[0]; // Current date
+    String time =
+        "${now.hour}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}"; // Current time
 
+    // Create a Receipt for card payment
+    String orderNumber = _generateOrderNumber();
+    Map<String, dynamic> receipt = {
+      'orderNumber': orderNumber,
+      'date': date, // Current date
+      'time': time, // Exact current time
+      'cartItems': widget.cartItems,
+      'totalAmount': widget.totalPrice,
+      'cashReceived': 0,
+      'change': 0,
+    };
+
+    widget.onReceiptAdded(receipt); // Passing the receipt to history
+
+    // Show success dialog
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return PaymentDialog(
-          isCash: isCashSelected,
+          isCash: false,
           totalAmount: widget.totalPrice,
-          receivedAmount: receivedAmount,
-          change: change,
           cartItems: widget.cartItems,
-          onSaveReceipt: _onSaveReceipt, // Pass the callback
-          orderNumber:
-              '#${_orderCounter.toString().padLeft(3, '0')}', // Order number is sequential
+          orderNumber: orderNumber,
+          change: 0, // No change for card payments
         );
       },
     );
+
+    // Increment order number for next receipt
+    setState(() {
+      _orderNumber++;
+    });
   }
 
   @override
@@ -89,6 +144,7 @@ class _CheckoutState extends State<Checkout> {
       drawer: CustomDrawer(),
       body: Row(
         children: [
+          // Left Panel (Cart Summary)
           Expanded(
             flex: 1,
             child: Container(
@@ -102,7 +158,6 @@ class _CheckoutState extends State<Checkout> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const Divider(),
-                  // Display Cart Items List
                   Expanded(
                     child: ListView(
                       children: widget.cartItems.values.map((item) {
@@ -116,7 +171,6 @@ class _CheckoutState extends State<Checkout> {
                     ),
                   ),
                   const Divider(),
-                  // Display Total Price of Cart Items
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -136,14 +190,8 @@ class _CheckoutState extends State<Checkout> {
               ),
             ),
           ),
-          const VerticalDivider(
-            width: 4,
-            color: Colors.grey,
-            thickness: 0.7,
-            indent: 10,
-            endIndent: 10,
-          ),
-          // Payment Section
+          const VerticalDivider(width: 4, color: Colors.grey, thickness: 0.7),
+          // Right Panel (Payment and Checkout)
           Expanded(
             flex: 2,
             child: Padding(
@@ -170,13 +218,17 @@ class _CheckoutState extends State<Checkout> {
                             fontSize: 40, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 30),
-                      // Payment Method Buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Cash Payment Method Button
                           GestureDetector(
-                            onTap: () => onButtonTapped('cash'),
+                            onTap: () {
+                              setState(() {
+                                isCashSelected = true;
+                                isCardSelected = false;
+                                _paymentController.clear();
+                              });
+                            },
                             child: Container(
                               width: 250,
                               height: 65,
@@ -203,9 +255,14 @@ class _CheckoutState extends State<Checkout> {
                               ),
                             ),
                           ),
-                          // Card Payment Method Button
                           GestureDetector(
-                            onTap: () => onButtonTapped('card'),
+                            onTap: () {
+                              setState(() {
+                                isCardSelected = true;
+                                isCashSelected = false;
+                                _paymentController.clear();
+                              });
+                            },
                             child: Container(
                               width: 250,
                               height: 65,
@@ -235,7 +292,6 @@ class _CheckoutState extends State<Checkout> {
                         ],
                       ),
                       const SizedBox(height: 40),
-                      // Conditional Input Field (Cash or Card)
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
@@ -244,12 +300,11 @@ class _CheckoutState extends State<Checkout> {
                           margin: const EdgeInsets.only(left: 60),
                           decoration: BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(color: Colors.black, width: 2),
-                            ),
+                                bottom:
+                                    BorderSide(color: Colors.black, width: 2)),
                           ),
                           child: TextField(
-                            controller:
-                                _paymentController, // Use the controller
+                            controller: _paymentController,
                             decoration: InputDecoration(
                               hintText: isCardSelected
                                   ? "Enter card number"
@@ -260,55 +315,23 @@ class _CheckoutState extends State<Checkout> {
                                   EdgeInsets.symmetric(horizontal: 16.0),
                             ),
                             keyboardType: TextInputType.number,
-                            maxLength: isCardSelected
-                                ? 19
-                                : null, // Set maxLength for card only
-                            inputFormatters: isCardSelected
-                                ? [
-                                    FilteringTextInputFormatter
-                                        .digitsOnly, // Only digits allowed
-                                    TextInputFormatter.withFunction(
-                                      (oldValue, newValue) {
-                                        final text = newValue.text.replaceAll(
-                                            RegExp(r'\D'),
-                                            ''); // Remove non-digits
-                                        String formatted = '';
-                                        for (int i = 0; i < text.length; i++) {
-                                          if (i > 0 && i % 4 == 0) {
-                                            formatted += '-';
-                                          }
-                                          formatted += text[i];
-                                        }
-                                        return newValue.copyWith(
-                                          text: formatted,
-                                        );
-                                      },
-                                    ),
-                                  ]
-                                : [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    TextInputFormatter.withFunction(
-                                      (oldValue, newValue) {
-                                        final newText = newValue.text
-                                            .replaceAll(
-                                                RegExp(
-                                                    r'(?<=\d)(?=(\d{3})+\b)'),
-                                                ',');
-                                        return newValue.copyWith(text: newText);
-                                      },
-                                    ),
-                                  ],
+                            maxLength: isCardSelected ? 19 : null,
                           ),
                         ),
                       ),
                       const SizedBox(height: 60),
-                      // Final Checkout Button
                       SizedBox(
                         width: 310,
                         height: 55,
                         child: CustomButton(
                           text: "Checkout",
-                          onPressed: _showPaymentDialog,
+                          onPressed: () {
+                            if (isCashSelected) {
+                              _processCashPayment(context);
+                            } else if (isCardSelected) {
+                              _processCardPayment(context);
+                            }
+                          },
                         ),
                       ),
                     ],

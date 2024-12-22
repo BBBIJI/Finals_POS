@@ -1,13 +1,13 @@
-import 'package:finalproject_pulse/presentation/mainpage/widget/cartsumarry.dart';
+import 'package:finalproject_pulse/common/widgets/app_bar.dart';
+import 'package:finalproject_pulse/presentation/checkout/pages/checkout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
-import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
-import 'package:finalproject_pulse/presentation/mainpage/widget/product_card.dart';
-import 'package:finalproject_pulse/presentation/mainpage/widget/category_box.dart';
 import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
-import 'package:finalproject_pulse/presentation/checkout/pages/checkout_page.dart'; // Import Checkout page
+import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
+import 'package:finalproject_pulse/presentation/mainpage/widget/cartsumarry.dart';
+import 'package:finalproject_pulse/presentation/mainpage/widget/product_card.dart'; // Import ProductCard
+import 'package:finalproject_pulse/presentation/mainpage/widget/category_box.dart'; // Import CategoryBox
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
@@ -18,59 +18,27 @@ class Mainpage extends StatefulWidget {
 
 class _MainpageState extends State<Mainpage> {
   final Map<String, CartItem> _cartItems = {};
-
   double get _totalPrice => _cartItems.values
       .fold(0, (sum, item) => sum + (item.price * item.quantity));
 
-  void _addToCart(String productName, double price, int stock) {
-    setState(() {
-      if (_cartItems.containsKey(productName)) {
-        if (_cartItems[productName]!.quantity + 1 > stock) {
-          // Alert for exceeding stock
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Stock Limit Reached'),
-              content: const Text(
-                  'You cannot add more items than available in stock.'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-          return;
-        }
-        _cartItems[productName]!.quantity++;
-      } else {
-        _cartItems[productName] = CartItem(
-          productName: productName,
-          price: price,
-          quantity: 1,
-        );
-      }
-    });
-  }
-
-  void _clearCart() {
-    setState(() {
-      _cartItems.clear();
-    });
-  }
-
+  // Function to handle navigation to the checkout page
   void _goToCheckout() {
-    // Navigate to Checkout page with cart items and total price
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Checkout(
-          cartItems: _cartItems, // Pass cart items
-          totalPrice: _totalPrice, // Pass total price
+          cartItems: _cartItems,
+          totalPrice: _totalPrice,
+          onReceiptAdded: _onReceiptAdded, // Callback to handle receipt
         ),
       ),
     );
+  }
+
+  // Callback function to handle the receipt after checkout
+  void _onReceiptAdded(Map<String, dynamic> receipt) {
+    // Handle receipt logic here (store in history, display, etc.)
+    print('Receipt Added: $receipt');
   }
 
   @override
@@ -82,19 +50,20 @@ class _MainpageState extends State<Mainpage> {
       body: Row(
         children: [
           Expanded(
-            flex: 5, // Increased flex for product section
+            flex: 5,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Padding(
                   padding: EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    "Fruits & Vegetables",
+                    "Products",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
+                // Display the products using the ProductCard widget
                 Expanded(
-                  flex: 4, // Adjusted flex for products
+                  flex: 4,
                   child: BlocBuilder<InventoryBloc, InventoryState>(
                     builder: (context, state) {
                       if (state is InventoryLoading) {
@@ -109,16 +78,29 @@ class _MainpageState extends State<Mainpage> {
                             mainAxisSpacing: 10,
                             crossAxisSpacing: 10,
                           ),
-                          itemCount: state.products.length,
+                          itemCount:
+                              state.products.length, // Display all products
                           itemBuilder: (context, index) {
                             final product = state.products[index];
                             return ProductCard(
                               product: product,
-                              onAddToCart: () => _addToCart(
-                                product.name,
-                                product.price,
-                                product.stock,
-                              ),
+                              onAddToCart: () {
+                                // Add the product to the cart
+                                setState(() {
+                                  if (_cartItems.containsKey(product.barcode)) {
+                                    // Increment quantity if the product is already in the cart
+                                    _cartItems[product.barcode]?.quantity++;
+                                  } else {
+                                    // Add the product to the cart with initial quantity 1
+                                    _cartItems[product.barcode] = CartItem(
+                                      barcode: product.barcode,
+                                      productName: product.name,
+                                      price: product.price,
+                                      quantity: 1,
+                                    );
+                                  }
+                                });
+                              },
                             );
                           },
                         );
@@ -137,8 +119,9 @@ class _MainpageState extends State<Mainpage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
+                // Categories (Assume categories are loaded here)
                 Expanded(
-                  flex: 1, // Adjusted flex for categories
+                  flex: 1,
                   child: BlocBuilder<InventoryBloc, InventoryState>(
                     builder: (context, state) {
                       if (state is InventoryLoaded) {
@@ -172,13 +155,18 @@ class _MainpageState extends State<Mainpage> {
             indent: 10,
             endIndent: 10,
           ),
+          // Cart Summary Section
           Expanded(
             flex: 2,
             child: CartSummary(
               cartItems: _cartItems,
               totalPrice: _totalPrice,
-              clearCart: _clearCart,
-              onCheckout: _goToCheckout, // Added onCheckout callback
+              clearCart: () {
+                setState(() {
+                  _cartItems.clear();
+                });
+              },
+              onCheckout: _goToCheckout, // Passing checkout navigation function
             ),
           ),
         ],

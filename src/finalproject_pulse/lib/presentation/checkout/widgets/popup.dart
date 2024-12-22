@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_bloc.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_event.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:intl/intl.dart';
-import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
-import 'package:finalproject_pulse/presentation/checkout/pages/receipt.dart';
+import 'package:finalproject_pulse/presentation/checkout/pages/receipt.dart'; // Ensure Receipt page is imported
 
 class PaymentDialog extends StatelessWidget {
-  final bool isCash; // Payment method
-  final double totalAmount; // Total amount
-  final double? receivedAmount; // Received amount for cash payments
-  final double? change; // Change for cash payments
-  final Map<String, CartItem> cartItems; // Cart items
-  final Function(Map<String, dynamic>)
-      onSaveReceipt; // Callback to save receipt
-  final String orderNumber; // Order number
+  final bool isCash;
+  final double totalAmount;
+  final Map<String, dynamic> cartItems;
+  final String orderNumber;
+  final double change;
 
   const PaymentDialog({
     Key? key,
     required this.isCash,
     required this.totalAmount,
-    this.receivedAmount,
-    this.change,
     required this.cartItems,
-    required this.onSaveReceipt,
-    required this.orderNumber, // Add orderNumber as a required parameter
+    required this.orderNumber,
+    required this.change,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final DateTime now = DateTime.now();
+    final String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    final String formattedTime = DateFormat('hh:mm a').format(now);
+
     return AlertDialog(
       backgroundColor: AppColors.primarygreen,
       shape: RoundedRectangleBorder(
@@ -34,8 +35,8 @@ class PaymentDialog extends StatelessWidget {
       ),
       content: SizedBox(
         width: 300,
+        height: 300,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Payment Details',
@@ -47,55 +48,44 @@ class PaymentDialog extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Amount Received:',
-              style: const TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '${receivedAmount?.toStringAsFixed(2) ?? totalAmount.toStringAsFixed(2)} NTD',
+              '$totalAmount NTD',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (isCash && change != null) ...[
-              const SizedBox(height: 20),
-              const Text(
-                'Change:',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              const SizedBox(height: 10),
+            const SizedBox(height: 20),
+            if (isCash)
               Text(
-                '${change!.toStringAsFixed(2)} NTD',
+                'Change: \$${change.toStringAsFixed(2)}',
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
               ),
-            ],
             const SizedBox(height: 30),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.greenlight,
               ),
               onPressed: () {
-                // Generate a receipt with the order number
-                final receipt = {
-                  'orderNumber': orderNumber, // Use the passed orderNumber
+                // Create the receipt map
+                Map<String, dynamic> receipt = {
+                  'orderNumber': orderNumber,
+                  'date': formattedDate,
+                  'time': formattedTime,
                   'cartItems': cartItems,
                   'totalAmount': totalAmount,
-                  'cashReceived': receivedAmount,
-                  'change': change,
-                  'date': DateFormat('yyyy/MM/dd').format(DateTime.now()),
-                  'time': DateFormat('hh:mm a').format(DateTime.now()),
+                  'cashReceived': isCash ? totalAmount : 0,
+                  'change': isCash ? change : 0,
                 };
 
-                // Save receipt via callback
-                onSaveReceipt(receipt);
+                // Add the receipt to the ReceiptBloc
+                BlocProvider.of<ReceiptBloc>(context)
+                    .add(AddReceiptEvent(receipt));
 
-                // Navigate to Receipt page
+                // Navigate to the Receipt page with receipt data
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

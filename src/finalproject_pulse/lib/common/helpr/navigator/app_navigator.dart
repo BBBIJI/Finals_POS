@@ -61,4 +61,6 @@ class AppNavigator {
       ),
     );
   }
+
+  static void pushNamed(BuildContext context, String receiptsPage) {}
 }

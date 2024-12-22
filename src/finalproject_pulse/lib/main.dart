@@ -1,7 +1,8 @@
-import 'package:finalproject_pulse/presentation/splashscreen/pages/splashscreen.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_bloc.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:finalproject_pulse/presentation/splashscreen/pages/splashscreen.dart';
 import 'package:finalproject_pulse/presentation/splashscreen/bloc/splash_cubit.dart';
 import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
 
@@ -22,12 +23,16 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => InventoryBloc(),
         ),
+        BlocProvider(
+          create: (context) => ReceiptBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'Pulse Pos and Inventory',
         debugShowCheckedModeBanner: false,
         // Home page
         home: const Splashscreen(),
+
         theme: ThemeData(
           useMaterial3: true,
         ),

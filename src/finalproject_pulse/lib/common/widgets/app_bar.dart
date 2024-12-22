@@ -6,8 +6,11 @@ import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
 import 'package:finalproject_pulse/presentation/mainpage/pages/mainpage.dart';
 import 'package:finalproject_pulse/presentation/profilepage/pages/profilepage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_bloc.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_state.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -47,20 +50,21 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       actions: [
         Padding(
-            padding: const EdgeInsets.only(top: 8.0, right: 12.0),
-            child: MaterialButton(
-              onPressed: () {
-                AppNavigator.pushReplacement(context, const Profilepage());
-              },
-              color: Colors.blue,
-              textColor: Colors.white,
-              child: const Icon(
-                Icons.camera_alt,
-                size: 24,
-              ),
-              padding: EdgeInsets.all(16),
-              shape: CircleBorder(),
-            )),
+          padding: const EdgeInsets.only(top: 8.0, right: 12.0),
+          child: MaterialButton(
+            onPressed: () {
+              AppNavigator.pushReplacement(context, const Profilepage());
+            },
+            color: Colors.blue,
+            textColor: Colors.white,
+            child: const Icon(
+              Icons.camera_alt,
+              size: 24,
+            ),
+            padding: EdgeInsets.all(16),
+            shape: CircleBorder(),
+          ),
+        ),
       ],
     );
   }
@@ -99,7 +103,36 @@ class CustomDrawer extends StatelessWidget {
                   _buildDrawerItem(
                     icon: Icons.receipt,
                     label: 'Receipts',
-                    onTap: () {},
+                    onTap: () {
+                      AppNavigator.push(
+                        context,
+                        BlocBuilder<ReceiptBloc, ReceiptState>(
+                          builder: (context, state) {
+                            if (state is ReceiptLoaded &&
+                                state.receipts.isNotEmpty) {
+                              return Receipt(); // Show receipt history
+                            } else {
+                              return Scaffold(
+                                appBar: AppBar(
+                                  title: const Text('Receipts'),
+                                  backgroundColor: AppColors.primarygreen,
+                                ),
+                                body: Center(
+                                  child: const Text(
+                                    'No receipts available.',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      );
+                    },
                   ),
                   _buildDrawerItem(
                     icon: Icons.report,
