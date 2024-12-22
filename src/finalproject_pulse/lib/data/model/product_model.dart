@@ -49,4 +49,36 @@ class Product {
       dateImported: dateImported ?? this.dateImported,
     );
   }
+
+  // Factory method to create a Product from a JSON object
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      name: json['product_name'] as String,
+      category: json['category_id'] as String,
+      price: (json['unit_price'] as num).toDouble(),
+      expiredDate: json['expired_date'] as String,
+      barcode: json['product_id'] as String,
+      soldBy: json['supplier_id'] as String,
+      unit: json['unit'] as String,
+      stock: json['stock'] as int,
+      location: json['location'] as String,
+      dateImported: json['date_imported'] as String,
+    );
+  }
+
+  // Method to convert a Product to a JSON object
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'category': category,
+      'price': price,
+      'expiredDate': expiredDate,
+      'barcode': barcode,
+      'soldBy': soldBy,
+      'unit': unit,
+      'stock': stock,
+      'location': location,
+      'dateImported': dateImported,
+    };
+  }
 }
