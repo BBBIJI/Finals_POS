@@ -41,6 +41,25 @@ class UpdateProductLocation extends InventoryEvent {
 
 class FetchData extends InventoryEvent {}
 
+// New Events
+class FetchDataSuccess extends InventoryEvent {
+  final List<Product> products;
+
+  FetchDataSuccess(this.products);
+
+  @override
+  List<Object?> get props => [products];
+}
+
+class FetchDataError extends InventoryEvent {
+  final String message;
+
+  FetchDataError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 // Abstract base class for inventory states
 abstract class InventoryState extends Equatable {
   @override
@@ -103,15 +122,25 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
         // Fetch products from the API
         List products = await getProducts();
 
-        // Assuming you have a way to parse products into `Product` objects
-        _products.clear();
-        _products.addAll(products.map((p) => Product.fromJson(p)).toList());
+        // Parse products into `Product` objects
+        final productList = products.map((p) => Product.fromJson(p)).toList();
 
-        emit(InventoryLoaded(categories: _categories, products: _products));
+        // Dispatch success event with fetched products
+        add(FetchDataSuccess(productList));
       } catch (error) {
-        emit(InventoryError('Failed to fetch products: $error'));
+        // Dispatch error event with error message
+        add(FetchDataError('Failed to fetch products: $error'));
       }
+    });
+
+    on<FetchDataSuccess>((event, emit) {
+      _products.clear();
+      _products.addAll(event.products);
       emit(InventoryLoaded(categories: _categories, products: _products));
+    });
+
+    on<FetchDataError>((event, emit) {
+      emit(InventoryError(event.message));
     });
   }
 

@@ -51,20 +51,18 @@ class Product {
   }
 
   // Factory method to create a Product from a JSON object
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      name: json['product_name'] as String,
-      category: json['category_id'] as String,
-      price: (json['unit_price'] as num).toDouble(),
-      expiredDate: json['expired_date'] as String,
-      barcode: json['product_id'] as String,
-      soldBy: json['supplier_id'] as String,
-      unit: json['unit'] as String,
-      stock: json['stock'] as int,
-      location: json['location'] as String,
-      dateImported: json['date_imported'] as String,
-    );
-  }
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
+        name: json['product_name'],
+        category: json['category_id'],
+        price: json['unit_price'],
+        expiredDate: json['expired_date'],
+        barcode: json['product_id'],
+        soldBy: json['supplier_id'],
+        unit: json['unit'],
+        stock: json['stock'],
+        location: json['location'],
+        dateImported: json['date_imported'],
+      );
 
   // Method to convert a Product to a JSON object
   Map<String, dynamic> toJson() {

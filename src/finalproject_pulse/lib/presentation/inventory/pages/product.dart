@@ -1,5 +1,4 @@
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
@@ -8,9 +7,52 @@ import 'package:finalproject_pulse/presentation/inventory/pages/create_product.d
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
 import 'package:finalproject_pulse/data/model/product_model.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/category.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class InventoryProduct extends StatelessWidget {
+class InventoryProduct extends StatefulWidget {
   const InventoryProduct({super.key});
+
+  @override
+  State<InventoryProduct> createState() => _InventoryProductState();
+}
+
+class _InventoryProductState extends State<InventoryProduct> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Fetch products and add them to InventoryBloc
+    _fetchAndDispatchProducts();
+  }
+
+  Future<void> _fetchAndDispatchProducts() async {
+    try {
+      List productList = await getProducts();
+      final List<Product> products =
+          productList.map((p) => Product.fromJson(p)).toList();
+      // Dispatch event to InventoryBloc with fetched products
+      context.read<InventoryBloc>().add(FetchDataSuccess(products));
+    } catch (error) {
+      // Dispatch error event if fetching fails
+      context
+          .read<InventoryBloc>()
+          .add(FetchDataError('Failed to fetch products12: $error'));
+    }
+  }
+
+  Future<List> getProducts() async {
+    String url = "http://localhost/flutter/api/getAllProducts.php";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var products = jsonDecode(response.body);
+      return products;
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
