@@ -1,13 +1,15 @@
-import 'package:finalproject_pulse/common/widgets/app_bar.dart';
-import 'package:finalproject_pulse/presentation/checkout/pages/checkout_page.dart';
+import 'package:finalproject_pulse/data/model/product_model.dart';
+import 'package:finalproject_pulse/presentation/mainpage/widget/appbar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
 import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
+import 'package:finalproject_pulse/presentation/checkout/pages/checkout_page.dart';
 import 'package:finalproject_pulse/presentation/mainpage/widget/cartsumarry.dart';
-import 'package:finalproject_pulse/presentation/mainpage/widget/product_card.dart'; // Import ProductCard
-import 'package:finalproject_pulse/presentation/mainpage/widget/category_box.dart'; // Import CategoryBox
+import 'package:finalproject_pulse/presentation/mainpage/widget/product_card.dart';
+import 'package:finalproject_pulse/presentation/mainpage/widget/category_box.dart';
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
@@ -18,34 +20,61 @@ class Mainpage extends StatefulWidget {
 
 class _MainpageState extends State<Mainpage> {
   final Map<String, CartItem> _cartItems = {};
+
   double get _totalPrice => _cartItems.values
       .fold(0, (sum, item) => sum + (item.price * item.quantity));
 
-  // Function to handle navigation to the checkout page
-  void _goToCheckout() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Checkout(
-          cartItems: _cartItems,
-          totalPrice: _totalPrice,
-          onReceiptAdded: _onReceiptAdded, // Callback to handle receipt
-        ),
-      ),
-    );
-  }
+  void _handleBarcodeScanned(String barcode) {
+    final state = context.read<InventoryBloc>().state;
 
-  // Callback function to handle the receipt after checkout
-  void _onReceiptAdded(Map<String, dynamic> receipt) {
-    // Handle receipt logic here (store in history, display, etc.)
-    print('Receipt Added: $receipt');
+    if (state is InventoryLoaded) {
+      final product = state.products.firstWhere(
+        (p) => p.barcode == barcode,
+        orElse: () => Product(
+          name: '',
+          category: '',
+          price: 0.0,
+          expiredDate: '',
+          barcode: '',
+          soldBy: '',
+          unit: '',
+          stock: 0,
+          location: '',
+          dateImported: '',
+        ),
+      );
+
+      setState(() {
+        if (product.barcode.isNotEmpty) {
+          if (_cartItems.containsKey(product.barcode)) {
+            _cartItems[product.barcode]!.quantity++;
+          } else {
+            _cartItems[product.barcode] = CartItem(
+              barcode: product.barcode,
+              productName: product.name,
+              price: product.price,
+              quantity: 1,
+            );
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${product.name} added to cart!')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: const Text('Unrecognized barcode.')),
+          );
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greenlight,
-      appBar: CustomAppBar(),
+      appBar: Appbarmain(
+        onBarcodeScanned: _handleBarcodeScanned,
+      ),
       drawer: CustomDrawer(),
       body: Row(
         children: [
@@ -61,7 +90,6 @@ class _MainpageState extends State<Mainpage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-                // Display the products using the ProductCard widget
                 Expanded(
                   flex: 4,
                   child: BlocBuilder<InventoryBloc, InventoryState>(
@@ -78,20 +106,16 @@ class _MainpageState extends State<Mainpage> {
                             mainAxisSpacing: 10,
                             crossAxisSpacing: 10,
                           ),
-                          itemCount:
-                              state.products.length, // Display all products
+                          itemCount: state.products.length,
                           itemBuilder: (context, index) {
                             final product = state.products[index];
                             return ProductCard(
                               product: product,
                               onAddToCart: () {
-                                // Add the product to the cart
                                 setState(() {
                                   if (_cartItems.containsKey(product.barcode)) {
-                                    // Increment quantity if the product is already in the cart
                                     _cartItems[product.barcode]?.quantity++;
                                   } else {
-                                    // Add the product to the cart with initial quantity 1
                                     _cartItems[product.barcode] = CartItem(
                                       barcode: product.barcode,
                                       productName: product.name,
@@ -119,7 +143,6 @@ class _MainpageState extends State<Mainpage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-                // Categories (Assume categories are loaded here)
                 Expanded(
                   flex: 1,
                   child: BlocBuilder<InventoryBloc, InventoryState>(
@@ -155,7 +178,6 @@ class _MainpageState extends State<Mainpage> {
             indent: 10,
             endIndent: 10,
           ),
-          // Cart Summary Section
           Expanded(
             flex: 2,
             child: CartSummary(
@@ -166,7 +188,20 @@ class _MainpageState extends State<Mainpage> {
                   _cartItems.clear();
                 });
               },
-              onCheckout: _goToCheckout, // Passing checkout navigation function
+              onCheckout: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Checkout(
+                      cartItems: _cartItems,
+                      totalPrice: _totalPrice,
+                      onReceiptAdded: (receipt) {
+                        print('Receipt Added: $receipt');
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],

@@ -1,12 +1,9 @@
-import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_bloc.dart';
-import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_event.dart';
 import 'package:flutter/material.dart';
 import 'package:finalproject_pulse/data/model/cart_item_mode.dart';
 import 'package:finalproject_pulse/presentation/checkout/widgets/popup.dart'; // Use PaymentDialog
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/common/widgets/custom_button.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Checkout extends StatefulWidget {
   final Map<String, CartItem> cartItems;

@@ -1,71 +1,106 @@
-// ignore_for_file: prefer_const_constructors
-
+import 'package:finalproject_pulse/presentation/checkout/pages/receipt.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/product.dart';
 import 'package:finalproject_pulse/presentation/mainpage/pages/mainpage.dart';
+import 'package:finalproject_pulse/presentation/mainpage/widget/barcode_scanner.dart';
+import 'package:finalproject_pulse/presentation/profilepage/pages/profilepage.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/common/helpr/navigator/app_navigator.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_bloc.dart';
+import 'package:finalproject_pulse/presentation/checkout/bloc/receipt_state.dart';
 
 class Appbarmain extends StatelessWidget implements PreferredSizeWidget {
+  final Function(String) onBarcodeScanned;
+
+  Appbarmain({Key? key, required this.onBarcodeScanned})
+      : preferredSize = const Size.fromHeight(80.0),
+        super(key: key);
+
   @override
   final Size preferredSize;
-
-  Appbarmain({Key? key})
-      : preferredSize = Size.fromHeight(80.0),
-        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: AppColors.primarygreen,
-      leading: Padding(
-        padding: const EdgeInsets.only(top: 10.0, left: 8.0, right: 8.0),
-        child: IconButton(
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.white,
-            size: 40, // Adjust icon size if needed
-          ),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
+      leading: IconButton(
+        icon: const Icon(Icons.menu, color: Colors.white, size: 40),
+        onPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
       ),
       title: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0),
-        child: Container(
-          height: 32.0,
-          width: 500,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: TextField(
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              hintText: 'Search...',
-              hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-              prefixIcon: Icon(
-                Icons.search,
-                color: AppColors.primarygreen,
-                size: 20,
+        child: SizedBox(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image.asset(
+                'assets/images/IconWhite.png', // Replace with your logo image asset
+                height: 60,
+                width: 60,
               ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-            ),
+              Container(
+                height: 32.0,
+                width: 400,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(219, 209, 206, 206),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: const TextField(
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                    prefixIcon: Icon(Icons.search,
+                        color: AppColors.primarygreen, size: 20),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
       centerTitle: true,
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0, right: 12.0),
-          child: CircleAvatar(
-            backgroundImage: const AssetImage(
-              'assets/profile.jpg', // Replace with your profile image asset
+        Row(
+          children: [
+            MaterialButton(
+              onPressed: () {
+                AppNavigator.pushReplacement(context, const Profilepage());
+              },
+              color: Colors.blue,
+              textColor: Colors.white,
+              child: const Icon(
+                Icons.camera_alt,
+                size: 24,
+              ),
+              padding: EdgeInsets.all(16),
+              shape: CircleBorder(),
             ),
-            radius: 20, // Adjust CircleAvatar size as needed
-          ),
+            IconButton(
+              icon: const Icon(
+                Icons.qr_code_scanner,
+                color: Colors.white,
+                size: 28,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BarcodeScannerPage(
+                      onBarcodeScanned: onBarcodeScanned,
+                      recognizedBarcodes: [],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ],
     );
@@ -77,8 +112,7 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: AppColors
-            .primarygreen, // Matches the background color of the drawer
+        color: AppColors.primarygreen,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -93,38 +127,60 @@ class CustomDrawer extends StatelessWidget {
                     icon: Icons.shopping_cart,
                     label: 'POS',
                     onTap: () {
-                      AppNavigator.pushReplacement(
-                          context, Mainpage()); // Define navigation logic
+                      AppNavigator.push(context, Mainpage());
                     },
                   ),
                   _buildDrawerItem(
                     icon: Icons.inventory,
                     label: 'Inventory',
                     onTap: () {
-                      AppNavigator.pushReplacement(context,
-                          InventoryProduct()); // Define navigation logic
+                      AppNavigator.push(context, InventoryProduct());
                     },
                   ),
                   _buildDrawerItem(
                     icon: Icons.receipt,
                     label: 'Receipts',
                     onTap: () {
-                      Navigator.pop(context); // Define navigation logic
+                      AppNavigator.push(
+                        context,
+                        BlocBuilder<ReceiptBloc, ReceiptState>(
+                          builder: (context, state) {
+                            if (state is ReceiptLoaded &&
+                                state.receipts.isNotEmpty) {
+                              return Receipt(); // Show receipt history
+                            } else {
+                              return Scaffold(
+                                appBar: AppBar(
+                                  title: const Text('Receipts'),
+                                  backgroundColor: AppColors.primarygreen,
+                                ),
+                                body: Center(
+                                  child: const Text(
+                                    'No receipts available.',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      );
                     },
                   ),
                   _buildDrawerItem(
                     icon: Icons.report,
                     label: 'Staff Report',
-                    onTap: () {
-                      Navigator.pop(context); // Define navigation logic
-                    },
+                    onTap: () {},
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(
-                  16.0), // Adjust padding for the footer logo
+              padding: const EdgeInsets.all(16.0),
               child: Text(
                 'Pulse POS System',
                 style: TextStyle(
