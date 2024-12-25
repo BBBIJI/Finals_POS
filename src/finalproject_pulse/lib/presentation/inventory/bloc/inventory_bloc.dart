@@ -144,6 +144,19 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     });
   }
 
+  Future<List> getCategories() async {
+    String url = "http://localhost/flutter/api/getAllCategories.php";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var category = jsonDecode(response.body);
+      return category;
+    } else {
+      return [];
+    }
+  }
+
   Future<List> getProducts() async {
     String url = "http://localhost/flutter/api/getAllProducts.php";
 
