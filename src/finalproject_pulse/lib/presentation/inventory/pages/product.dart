@@ -131,40 +131,16 @@ class _InventoryProductState extends State<InventoryProduct> {
                               DataColumn(label: Text('Date Imported')),
                               DataColumn(label: Text('Expiry Date')),
                               DataColumn(label: Text('Stock')),
-                              DataColumn(label: Text('Location')),
                             ],
                             rows: products.map((product) {
                               return DataRow(
                                 cells: [
                                   DataCell(Text(product.name)),
-                                  DataCell(Text(product.category)),
+                                  DataCell(Text(product.category.toString())),
                                   DataCell(Text(product.price.toString())),
                                   DataCell(Text(product.dateImported)),
                                   DataCell(Text(product.expiredDate)),
                                   DataCell(Text(product.stock.toString())),
-                                  DataCell(
-                                    DropdownButton<String>(
-                                      value: product.location,
-                                      items: const [
-                                        DropdownMenuItem(
-                                            value: 'Shelved',
-                                            child: Text('Shelved')),
-                                        DropdownMenuItem(
-                                            value: 'Warehouse',
-                                            child: Text('Warehouse')),
-                                      ],
-                                      onChanged: (newLocation) {
-                                        if (newLocation != null) {
-                                          // Use UpdateProductLocation event
-                                          final updatedProduct = product
-                                              .copyWith(location: newLocation);
-                                          context.read<InventoryBloc>().add(
-                                              UpdateProductLocation(
-                                                  updatedProduct));
-                                        }
-                                      },
-                                    ),
-                                  ),
                                 ],
                               );
                             }).toList(),
