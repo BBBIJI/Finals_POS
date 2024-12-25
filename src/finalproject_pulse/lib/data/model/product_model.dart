@@ -54,7 +54,7 @@ class Product {
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       name: json['product_name'],
-      category: json['category_id'].toString(),
+      category: json['description'],
       price: json['unit_price'],
       expiredDate: json['expired_date'].toString(),
       barcode: json['product_id'].toString(),

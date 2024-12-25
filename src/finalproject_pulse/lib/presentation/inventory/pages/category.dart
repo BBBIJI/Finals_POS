@@ -8,9 +8,52 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/card_category.dart';
 import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class InventoryCategory extends StatelessWidget {
+class InventoryCategory extends StatefulWidget {
   const InventoryCategory({super.key});
+
+  @override
+  State<InventoryCategory> createState() => _InventoryCategoryState();
+}
+
+class _InventoryCategoryState extends State<InventoryCategory> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Fetch products and add them to InventoryBloc
+    _fetchAndDispatchCategorys();
+  }
+
+  Future<void> _fetchAndDispatchCategorys() async {
+    try {
+      List productList = await getCategorys();
+      final List<Category> products =
+          productList.map((p) => Category.fromJson(p)).toList();
+      // Dispatch event to InventoryBloc with fetched products
+      context.read<InventoryBloc>().add(FetchDataSuccess(products));
+    } catch (error) {
+      // Dispatch error event if fetching fails
+      context
+          .read<InventoryBloc>()
+          .add(FetchDataError('Failed to fetch products12: $error'));
+    }
+  }
+
+  Future<List> getCategorys() async {
+    String url = "http://localhost/flutter/api/getAllCategories.php";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var products = jsonDecode(response.body);
+      return products;
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
