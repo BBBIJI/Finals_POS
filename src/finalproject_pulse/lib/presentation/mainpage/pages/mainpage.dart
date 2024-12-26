@@ -10,6 +10,9 @@ import 'package:finalproject_pulse/presentation/checkout/pages/checkout_page.dar
 import 'package:finalproject_pulse/presentation/mainpage/widget/cartsumarry.dart';
 import 'package:finalproject_pulse/presentation/mainpage/widget/product_card.dart';
 import 'package:finalproject_pulse/presentation/mainpage/widget/category_box.dart';
+import 'package:finalproject_pulse/data/model/category_model.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
@@ -19,6 +22,66 @@ class Mainpage extends StatefulWidget {
 }
 
 class _MainpageState extends State<Mainpage> {
+  bool _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchAndDispatchCategory();
+  }
+
+  Future<void> _fetchAndDispatchCategory() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      List productList = await getProducts();
+      List categoryList = await getCategories();
+      final List<Product> products =
+          productList.map((p) => Product.fromJson(p)).toList();
+      // Dispatch event to InventoryBloc with fetched products
+      context.read<InventoryBloc>().add(FetchProductSuccess(products));
+      final List<Category> categories =
+          categoryList.map((c) => Category.fromJson(c)).toList();
+      context.read<InventoryBloc>().add(FetchCategorySuccess(categories));
+    } catch (error) {
+      context
+          .read<InventoryBloc>()
+          .add(FetchDataError('Failed to fetch categories123: $error'));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<List> getCategories() async {
+    String url = "http://localhost/flutter/api/getAllCategories.php";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var products = jsonDecode(response.body);
+      return products;
+    } else {
+      throw Exception('Failed to load categories');
+    }
+  }
+
+  Future<List> getProducts() async {
+    String url = "http://localhost/flutter/api/getAllProducts.php";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var products = jsonDecode(response.body);
+      return products;
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
+
   final Map<String, CartItem> _cartItems = {};
 
   double get _totalPrice => _cartItems.values
@@ -94,11 +157,19 @@ class _MainpageState extends State<Mainpage> {
                   flex: 4,
                   child: BlocBuilder<InventoryBloc, InventoryState>(
                     builder: (context, state) {
-                      if (state is InventoryLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                      if (_isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is InventoryLoading) {
+                        return const Center(child: CircularProgressIndicator());
                       } else if (state is InventoryLoaded) {
+                        final categories = state.categories;
+                        final products = state.products;
+
+                        if (products.isEmpty || categories.isEmpty) {
+                          return const Center(
+                              child:
+                                  Text('No product & categories available.'));
+                        }
                         return GridView.builder(
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(

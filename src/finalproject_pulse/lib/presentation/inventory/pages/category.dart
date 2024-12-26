@@ -20,48 +20,6 @@ class InventoryCategory extends StatefulWidget {
 }
 
 class _InventoryCategoryState extends State<InventoryCategory> {
-  bool _isLoading = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _fetchAndDispatchCategory();
-  }
-
-  Future<void> _fetchAndDispatchCategory() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      List categoryList = await getCategories();
-      final List<Category> categories =
-          categoryList.map((c) => Category.fromJson(c)).toList();
-      context.read<InventoryBloc>().add(FetchCategorySuccess(categories));
-    } catch (error) {
-      context
-          .read<InventoryBloc>()
-          .add(FetchDataError('Failed to fetch categories123: $error'));
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<List> getCategories() async {
-    String url = "http://localhost/flutter/api/getAllCategories.php";
-
-    http.Response response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      var products = jsonDecode(response.body);
-      return products;
-    } else {
-      throw Exception('Failed to load categories');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,10 +71,7 @@ class _InventoryCategoryState extends State<InventoryCategory> {
                   Expanded(
                     child: BlocBuilder<InventoryBloc, InventoryState>(
                       builder: (context, state) {
-                        if (_isLoading) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (state is InventoryLoading) {
+                        if (state is InventoryLoading) {
                           return const Center(
                               child: CircularProgressIndicator());
                         } else if (state is InventoryLoaded) {
@@ -124,7 +79,12 @@ class _InventoryCategoryState extends State<InventoryCategory> {
 
                           if (categories.isEmpty) {
                             return const Center(
-                                child: Text('No categories available.'));
+                              child: Text(
+                                'No categories available',
+                                style:
+                                    TextStyle(fontSize: 18, color: Colors.grey),
+                              ),
+                            );
                           }
 
                           return GridView.count(
