@@ -20,26 +20,32 @@ class InventoryCategory extends StatefulWidget {
 }
 
 class _InventoryCategoryState extends State<InventoryCategory> {
+  bool _isLoading = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // Fetch products and add them to InventoryBloc
     _fetchAndDispatchCategory();
   }
 
   Future<void> _fetchAndDispatchCategory() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       List categoryList = await getCategories();
       final List<Category> categories =
           categoryList.map((c) => Category.fromJson(c)).toList();
-      // Dispatch event to InventoryBloc with fetched products
       context.read<InventoryBloc>().add(FetchCategorySuccess(categories));
     } catch (error) {
-      // Dispatch error event if fetching fails
       context
           .read<InventoryBloc>()
           .add(FetchDataError('Failed to fetch categories123: $error'));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -107,7 +113,10 @@ class _InventoryCategoryState extends State<InventoryCategory> {
                   Expanded(
                     child: BlocBuilder<InventoryBloc, InventoryState>(
                       builder: (context, state) {
-                        if (state is InventoryLoading) {
+                        if (_isLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (state is InventoryLoading) {
                           return const Center(
                               child: CircularProgressIndicator());
                         } else if (state is InventoryLoaded) {
