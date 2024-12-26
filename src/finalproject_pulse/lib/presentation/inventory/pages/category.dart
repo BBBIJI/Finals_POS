@@ -119,7 +119,7 @@ class _InventoryCategoryState extends State<InventoryCategory> {
                           }
 
                           return GridView.count(
-                            crossAxisCount: 3,
+                            crossAxisCount: 5,
                             crossAxisSpacing: 20,
                             mainAxisSpacing: 20,
                             padding: const EdgeInsets.all(10.0),

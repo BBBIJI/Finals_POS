@@ -122,32 +122,39 @@ class _InventoryProductState extends State<InventoryProduct> {
                           );
                         }
 
-                        return SingleChildScrollView(
-                          child: DataTable(
-                            columns: const [
-                              DataColumn(label: Text('ID')),
-                              DataColumn(label: Text('Name')),
-                              DataColumn(label: Text('Category')),
-                              DataColumn(label: Text('Price')),
-                              DataColumn(label: Text('Date Imported')),
-                              DataColumn(label: Text('Expiry Date')),
-                              DataColumn(label: Text('Stock')),
-                              DataColumn(label: Text('Location')),
-                            ],
-                            rows: products.map((product) {
-                              return DataRow(
-                                cells: [
-                                  DataCell(Text(product.barcode)),
-                                  DataCell(Text(product.name)),
-                                  DataCell(Text(product.category.toString())),
-                                  DataCell(Text(product.price.toString())),
-                                  DataCell(Text(product.dateImported)),
-                                  DataCell(Text(product.expiredDate)),
-                                  DataCell(Text(product.stock.toString())),
-                                  DataCell(Text(product.location)),
+                        return Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('ID')),
+                                  DataColumn(label: Text('Name')),
+                                  DataColumn(label: Text('Category')),
+                                  DataColumn(label: Text('Price')),
+                                  DataColumn(label: Text('Date Imported')),
+                                  DataColumn(label: Text('Expiry Date')),
+                                  DataColumn(label: Text('Stock')),
+                                  DataColumn(label: Text('Location')),
                                 ],
-                              );
-                            }).toList(),
+                                rows: products.map((product) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(product.barcode)),
+                                      DataCell(Text(product.name)),
+                                      DataCell(
+                                          Text(product.category.toString())),
+                                      DataCell(Text(product.price.toString())),
+                                      DataCell(Text(product.dateImported)),
+                                      DataCell(Text(product.expiredDate)),
+                                      DataCell(Text(product.stock.toString())),
+                                      DataCell(Text(product.location)),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
                           ),
                         );
                       } else if (state is InventoryError) {
