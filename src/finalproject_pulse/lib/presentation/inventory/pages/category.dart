@@ -8,9 +8,59 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
 import 'package:finalproject_pulse/presentation/inventory/widget/card_category.dart';
 import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:finalproject_pulse/data/model/category_model.dart';
 
-class InventoryCategory extends StatelessWidget {
+class InventoryCategory extends StatefulWidget {
   const InventoryCategory({super.key});
+
+  @override
+  State<InventoryCategory> createState() => _InventoryCategoryState();
+}
+
+class _InventoryCategoryState extends State<InventoryCategory> {
+  bool _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchAndDispatchCategory();
+  }
+
+  Future<void> _fetchAndDispatchCategory() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      List categoryList = await getCategories();
+      final List<Category> categories =
+          categoryList.map((c) => Category.fromJson(c)).toList();
+      context.read<InventoryBloc>().add(FetchCategorySuccess(categories));
+    } catch (error) {
+      context
+          .read<InventoryBloc>()
+          .add(FetchDataError('Failed to fetch categories123: $error'));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<List> getCategories() async {
+    String url = "http://localhost/flutter/api/getAllCategories.php";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var products = jsonDecode(response.body);
+      return products;
+    } else {
+      throw Exception('Failed to load categories');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +113,10 @@ class InventoryCategory extends StatelessWidget {
                   Expanded(
                     child: BlocBuilder<InventoryBloc, InventoryState>(
                       builder: (context, state) {
-                        if (state is InventoryLoading) {
+                        if (_isLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (state is InventoryLoading) {
                           return const Center(
                               child: CircularProgressIndicator());
                         } else if (state is InventoryLoaded) {
@@ -75,7 +128,7 @@ class InventoryCategory extends StatelessWidget {
                           }
 
                           return GridView.count(
-                            crossAxisCount: 3,
+                            crossAxisCount: 5,
                             crossAxisSpacing: 20,
                             mainAxisSpacing: 20,
                             padding: const EdgeInsets.all(10.0),

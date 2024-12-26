@@ -1,5 +1,4 @@
 import 'package:finalproject_pulse/common/widgets/app_bar.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
@@ -8,9 +7,52 @@ import 'package:finalproject_pulse/presentation/inventory/pages/create_product.d
 import 'package:finalproject_pulse/presentation/inventory/widget/navigationbar.dart';
 import 'package:finalproject_pulse/data/model/product_model.dart';
 import 'package:finalproject_pulse/presentation/inventory/pages/category.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class InventoryProduct extends StatelessWidget {
+class InventoryProduct extends StatefulWidget {
   const InventoryProduct({super.key});
+
+  @override
+  State<InventoryProduct> createState() => _InventoryProductState();
+}
+
+class _InventoryProductState extends State<InventoryProduct> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Fetch products and add them to InventoryBloc
+    _fetchAndDispatchProducts();
+  }
+
+  Future<void> _fetchAndDispatchProducts() async {
+    try {
+      List productList = await getProducts();
+      final List<Product> products =
+          productList.map((p) => Product.fromJson(p)).toList();
+      // Dispatch event to InventoryBloc with fetched products
+      context.read<InventoryBloc>().add(FetchProductSuccess(products));
+    } catch (error) {
+      // Dispatch error event if fetching fails
+      context
+          .read<InventoryBloc>()
+          .add(FetchDataError('Failed to fetch products12: $error'));
+    }
+  }
+
+  Future<List> getProducts() async {
+    String url = "http://localhost/flutter/api/getAllProducts.php";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var products = jsonDecode(response.body);
+      return products;
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,52 +122,39 @@ class InventoryProduct extends StatelessWidget {
                           );
                         }
 
-                        return SingleChildScrollView(
-                          child: DataTable(
-                            columns: const [
-                              DataColumn(label: Text('Name')),
-                              DataColumn(label: Text('Category')),
-                              DataColumn(label: Text('Price')),
-                              DataColumn(label: Text('Date Imported')),
-                              DataColumn(label: Text('Expiry Date')),
-                              DataColumn(label: Text('Stock')),
-                              DataColumn(label: Text('Location')),
-                            ],
-                            rows: products.map((product) {
-                              return DataRow(
-                                cells: [
-                                  DataCell(Text(product.name)),
-                                  DataCell(Text(product.category)),
-                                  DataCell(Text(product.price.toString())),
-                                  DataCell(Text(product.dateImported)),
-                                  DataCell(Text(product.expiredDate)),
-                                  DataCell(Text(product.stock.toString())),
-                                  DataCell(
-                                    DropdownButton<String>(
-                                      value: product.location,
-                                      items: const [
-                                        DropdownMenuItem(
-                                            value: 'Shelved',
-                                            child: Text('Shelved')),
-                                        DropdownMenuItem(
-                                            value: 'Warehouse',
-                                            child: Text('Warehouse')),
-                                      ],
-                                      onChanged: (newLocation) {
-                                        if (newLocation != null) {
-                                          // Use UpdateProductLocation event
-                                          final updatedProduct = product
-                                              .copyWith(location: newLocation);
-                                          context.read<InventoryBloc>().add(
-                                              UpdateProductLocation(
-                                                  updatedProduct));
-                                        }
-                                      },
-                                    ),
-                                  ),
+                        return Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('ID')),
+                                  DataColumn(label: Text('Name')),
+                                  DataColumn(label: Text('Category')),
+                                  DataColumn(label: Text('Price')),
+                                  DataColumn(label: Text('Date Imported')),
+                                  DataColumn(label: Text('Expiry Date')),
+                                  DataColumn(label: Text('Stock')),
+                                  DataColumn(label: Text('Location')),
                                 ],
-                              );
-                            }).toList(),
+                                rows: products.map((product) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(product.barcode)),
+                                      DataCell(Text(product.name)),
+                                      DataCell(
+                                          Text(product.category.toString())),
+                                      DataCell(Text(product.price.toString())),
+                                      DataCell(Text(product.dateImported)),
+                                      DataCell(Text(product.expiredDate)),
+                                      DataCell(Text(product.stock.toString())),
+                                      DataCell(Text(product.location)),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
                           ),
                         );
                       } else if (state is InventoryError) {

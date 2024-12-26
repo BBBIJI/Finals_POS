@@ -16,3 +16,21 @@ class AddProduct extends InventoryEvent {
   @override
   List<Object?> get props => [product];
 }
+
+class FetchDataSuccess extends InventoryEvent {
+  final List<Product> products;
+
+  FetchDataSuccess(this.products);
+
+  @override
+  List<Object?> get props => [products];
+}
+
+class FetchDataError extends InventoryEvent {
+  final String message;
+
+  FetchDataError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
