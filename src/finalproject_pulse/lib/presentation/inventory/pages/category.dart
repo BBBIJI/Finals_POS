@@ -10,6 +10,7 @@ import 'package:finalproject_pulse/presentation/inventory/widget/card_category.d
 import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:finalproject_pulse/data/model/category_model.dart';
 
 class InventoryCategory extends StatefulWidget {
   const InventoryCategory({super.key});
@@ -24,25 +25,25 @@ class _InventoryCategoryState extends State<InventoryCategory> {
     super.didChangeDependencies();
 
     // Fetch products and add them to InventoryBloc
-    _fetchAndDispatchCategorys();
+    _fetchAndDispatchCategory();
   }
 
-  Future<void> _fetchAndDispatchCategorys() async {
+  Future<void> _fetchAndDispatchCategory() async {
     try {
-      List productList = await getCategorys();
-      final List<Category> products =
-          productList.map((p) => Category.fromJson(p)).toList();
+      List categoryList = await getCategories();
+      final List<Category> categories =
+          categoryList.map((c) => Category.fromJson(c)).toList();
       // Dispatch event to InventoryBloc with fetched products
-      context.read<InventoryBloc>().add(FetchDataSuccess(products));
+      context.read<InventoryBloc>().add(FetchCategorySuccess(categories));
     } catch (error) {
       // Dispatch error event if fetching fails
       context
           .read<InventoryBloc>()
-          .add(FetchDataError('Failed to fetch products12: $error'));
+          .add(FetchDataError('Failed to fetch categories123: $error'));
     }
   }
 
-  Future<List> getCategorys() async {
+  Future<List> getCategories() async {
     String url = "http://localhost/flutter/api/getAllCategories.php";
 
     http.Response response = await http.get(Uri.parse(url));
@@ -51,7 +52,7 @@ class _InventoryCategoryState extends State<InventoryCategory> {
       var products = jsonDecode(response.body);
       return products;
     } else {
-      throw Exception('Failed to load products');
+      throw Exception('Failed to load categories');
     }
   }
 

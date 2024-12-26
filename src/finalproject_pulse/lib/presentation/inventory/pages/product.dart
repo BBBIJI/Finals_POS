@@ -32,7 +32,7 @@ class _InventoryProductState extends State<InventoryProduct> {
       final List<Product> products =
           productList.map((p) => Product.fromJson(p)).toList();
       // Dispatch event to InventoryBloc with fetched products
-      context.read<InventoryBloc>().add(FetchDataSuccess(products));
+      context.read<InventoryBloc>().add(FetchProductSuccess(products));
     } catch (error) {
       // Dispatch error event if fetching fails
       context

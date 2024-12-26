@@ -2,8 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:finalproject_pulse/data/model/product_model.dart';
 import 'package:finalproject_pulse/data/model/category_model.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 // Abstract base class for inventory events
 abstract class InventoryEvent extends Equatable {
@@ -42,13 +40,22 @@ class UpdateProductLocation extends InventoryEvent {
 class FetchData extends InventoryEvent {}
 
 // New Events
-class FetchDataSuccess extends InventoryEvent {
+class FetchProductSuccess extends InventoryEvent {
   final List<Product> products;
 
-  FetchDataSuccess(this.products);
+  FetchProductSuccess(this.products);
 
   @override
   List<Object?> get props => [products];
+}
+
+class FetchCategorySuccess extends InventoryEvent {
+  final List<Category> categories;
+
+  FetchCategorySuccess(this.categories);
+
+  @override
+  List<Object?> get props => [categories];
 }
 
 class FetchDataError extends InventoryEvent {
@@ -115,58 +122,20 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
       }
     });
 
-    on<FetchData>((event, emit) async {
-      emit(InventoryLoading()); // Emit loading state
-
-      try {
-        // Fetch products from the API
-        List products = await getProducts();
-
-        // Parse products into `Product` objects
-        final productList = products.map((p) => Product.fromJson(p)).toList();
-
-        // Dispatch success event with fetched products
-        add(FetchDataSuccess(productList));
-      } catch (error) {
-        // Dispatch error event with error message
-        add(FetchDataError('Failed to fetch products: $error'));
-      }
-    });
-
-    on<FetchDataSuccess>((event, emit) {
+    on<FetchProductSuccess>((event, emit) {
       _products.clear();
       _products.addAll(event.products);
+      emit(InventoryLoaded(categories: _categories, products: _products));
+    });
+
+    on<FetchCategorySuccess>((event, emit) {
+      _categories.clear();
+      _categories.addAll(event.categories);
       emit(InventoryLoaded(categories: _categories, products: _products));
     });
 
     on<FetchDataError>((event, emit) {
       emit(InventoryError(event.message));
     });
-  }
-
-  Future<List> getCategories() async {
-    String url = "http://localhost/flutter/api/getAllCategories.php";
-
-    http.Response response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      var category = jsonDecode(response.body);
-      return category;
-    } else {
-      return [];
-    }
-  }
-
-  Future<List> getProducts() async {
-    String url = "http://localhost/flutter/api/getAllProducts.php";
-
-    http.Response response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      var products = jsonDecode(response.body);
-      return products;
-    } else {
-      return [];
-    }
   }
 }

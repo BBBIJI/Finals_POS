@@ -21,4 +21,16 @@ class Category {
       icon: IconData(map['icon'], fontFamily: 'MaterialIcons'),
     );
   }
+
+  // Factory method to create a Product from a JSON object
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(name: json['description'], icon: Icons.apple);
+  }
+  // Method to convert a Product to a JSON object
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'icon': icon.codePoint,
+    };
+  }
 }
