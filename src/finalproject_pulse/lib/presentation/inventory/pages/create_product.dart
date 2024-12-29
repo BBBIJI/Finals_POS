@@ -47,8 +47,15 @@ class _CreateProductState extends State<CreateProduct> {
     if (_formKey.currentState?.validate() ?? false) {
       final String todayDate = DateTime.now().toIso8601String().split('T')[0];
 
+      // Get the current largest product_id from the in-memory list
+      final int maxId = _getMaxProductId();
+
+      // Calculate the new product_id
+      final int newProductId = maxId + 1;
+
       // Create the Product object
       final product = Product(
+        product_id: newProductId,
         name: _nameController.text,
         category: _category ?? 'Unknown',
         price: double.parse(_priceController.text),
@@ -67,6 +74,25 @@ class _CreateProductState extends State<CreateProduct> {
       // Navigate back after saving
       Navigator.pop(context);
     }
+  }
+
+  int _getMaxProductId() {
+    // Replace `loadedProducts` with your actual List<Product> variable name
+    final state = context.read<InventoryBloc>().state;
+
+    if (state is InventoryLoaded) {
+      final products = state.products;
+
+      if (products.isEmpty) {
+        return 0; // Return 0 if the list is empty
+      }
+
+      return products
+          .map((products) => products.product_id)
+          .reduce((a, b) => a > b ? a : b);
+    }
+
+    return 0;
   }
 
   @override

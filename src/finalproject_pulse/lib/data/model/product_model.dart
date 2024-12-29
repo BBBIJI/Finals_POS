@@ -1,4 +1,5 @@
 class Product {
+  final int product_id;
   final String name;
   final String category;
   final double price;
@@ -11,6 +12,7 @@ class Product {
   final String dateImported;
 
   Product({
+    required this.product_id,
     required this.name,
     required this.category,
     required this.price,
@@ -25,6 +27,7 @@ class Product {
 
   // Method to create a copy of the product with updated fields
   Product copyWith({
+    int? product_id,
     String? name,
     String? category,
     double? price,
@@ -37,6 +40,7 @@ class Product {
     String? dateImported,
   }) {
     return Product(
+      product_id: product_id ?? this.product_id,
       name: name ?? this.name,
       category: category ?? this.category,
       price: price ?? this.price,
@@ -53,11 +57,12 @@ class Product {
   // Factory method to create a Product from a JSON object
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
+      product_id: json['product_id'],
       name: json['product_name'],
       category: json['description'],
       price: json['unit_price'],
       expiredDate: json['expired_date'].toString(),
-      barcode: json['product_id'].toString(),
+      barcode: json['barcode'].toString(),
       soldBy: json['supplier_id'].toString(),
       unit: json['unit'],
       stock: json['stock'],

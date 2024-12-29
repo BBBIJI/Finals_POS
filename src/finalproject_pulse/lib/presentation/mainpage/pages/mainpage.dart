@@ -94,6 +94,7 @@ class _MainpageState extends State<Mainpage> {
       final product = state.products.firstWhere(
         (p) => p.barcode == barcode,
         orElse: () => Product(
+          product_id: 0,
           name: '',
           category: '',
           price: 0.0,

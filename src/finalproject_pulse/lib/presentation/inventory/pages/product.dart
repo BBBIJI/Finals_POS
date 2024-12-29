@@ -92,6 +92,7 @@ class _InventoryProductState extends State<InventoryProduct> {
                               child: DataTable(
                                 columns: const [
                                   DataColumn(label: Text('ID')),
+                                  DataColumn(label: Text('Barcode')),
                                   DataColumn(label: Text('Name')),
                                   DataColumn(label: Text('Category')),
                                   DataColumn(label: Text('Price')),
@@ -103,6 +104,8 @@ class _InventoryProductState extends State<InventoryProduct> {
                                 rows: products.map((product) {
                                   return DataRow(
                                     cells: [
+                                      DataCell(
+                                          Text(product.product_id.toString())),
                                       DataCell(Text(product.barcode)),
                                       DataCell(Text(product.name)),
                                       DataCell(
