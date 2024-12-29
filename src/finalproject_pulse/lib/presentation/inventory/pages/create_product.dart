@@ -4,6 +4,8 @@ import 'package:finalproject_pulse/common/widgets/app_bar.dart';
 import 'package:finalproject_pulse/core/config/theme/app_colors.dart';
 import 'package:finalproject_pulse/presentation/inventory/bloc/inventory_bloc.dart';
 import 'package:finalproject_pulse/data/model/product_model.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CreateProduct extends StatefulWidget {
   const CreateProduct({super.key});
@@ -43,7 +45,7 @@ class _CreateProductState extends State<CreateProduct> {
   }
 
   // Save the product data
-  void _saveProduct() {
+  void _saveProduct() async {
     if (_formKey.currentState?.validate() ?? false) {
       final String todayDate = DateTime.now().toIso8601String().split('T')[0];
 
@@ -53,26 +55,77 @@ class _CreateProductState extends State<CreateProduct> {
       // Calculate the new product_id
       final int newProductId = maxId + 1;
 
+      final categoryId =
+          await _getCategoryIdByDescription(_category ?? 'Unknown');
+
       // Create the Product object
       final product = Product(
         product_id: newProductId,
         name: _nameController.text,
-        category: _category ?? 'Unknown',
+        category_id: categoryId,
+        category_desc: _category ?? 'Unknown',
         price: double.parse(_priceController.text),
         expiredDate: _expiredDateController.text,
         barcode: _barcodeController.text,
         soldBy: 'Each', // You can change this based on your logic
+        soldBy: 'Each', // Adjust based on your logic
         unit: _unitController.text,
         stock: int.parse(_stockController.text), // Using the stock controller
         location: _location ?? 'Shelved', // Using the location dropdown value
         dateImported: todayDate, // Automatically set to today's date
       );
 
-      // Add the product to InventoryBloc
+      // Save the product to InventoryBloc (local state management)
       context.read<InventoryBloc>().add(AddProduct(product));
 
-      // Navigate back after saving
-      Navigator.pop(context);
+      // Send the product to the database
+      Uri uri = Uri.parse('http://localhost/flutter/api/addProducts.php');
+      Map<String, dynamic> data = {
+        "product_id": product.product_id.toString(),
+        "name": product.name,
+        "category_id": product.category_id.toString(),
+        "price": product.price.toString(),
+        "expired_date": product.expiredDate,
+        "barcode": product.barcode,
+        "soldBy": '1',
+        "unit": product.unit,
+        "stock": product.stock.toString(),
+        "location": product.location,
+        "date_imported": todayDate,
+      };
+
+      try {
+        http.Response response = await http.post(uri, body: data);
+
+        if (response.statusCode == 200) {
+          if (response.body == '1') {
+            print('Success');
+          } else {
+            print('Error: Unexpected response body: ${response.body}');
+          }
+        } else {
+          print(
+              "The server returned a ${response.statusCode} error: ${response.reasonPhrase}");
+        }
+      } catch (e) {
+        print("An exception occurred: $e");
+      }
+    }
+  }
+
+  // Method to fetch category ID based on category description
+  Future<int> _getCategoryIdByDescription(String? description) async {
+    final uri = Uri.parse('http://localhost/flutter/api/getCategoryId.php');
+
+    // Send the category description to the server
+    final response = await http.post(uri, body: {'description': description});
+
+    if (response.statusCode == 200) {
+      // Assuming the response returns a JSON with the category ID
+      final int data = json.decode(response.body);
+      return data; // Return the category ID from the response
+    } else {
+      throw Exception('Failed to load category ID');
     }
   }
 
@@ -122,7 +175,10 @@ class _CreateProductState extends State<CreateProduct> {
                   ),
                 ),
                 TextButton(
-                  onPressed: _saveProduct,
+                  onPressed: () {
+                    _saveProduct();
+                    Navigator.pop(context);
+                  },
                   child: const Text(
                     'SAVE',
                     style: TextStyle(

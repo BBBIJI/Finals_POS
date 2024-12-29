@@ -108,8 +108,8 @@ class _InventoryProductState extends State<InventoryProduct> {
                                           Text(product.product_id.toString())),
                                       DataCell(Text(product.barcode)),
                                       DataCell(Text(product.name)),
-                                      DataCell(
-                                          Text(product.category.toString())),
+                                      DataCell(Text(
+                                          product.category_desc.toString())),
                                       DataCell(Text(product.price.toString())),
                                       DataCell(Text(product.dateImported)),
                                       DataCell(Text(product.expiredDate)),

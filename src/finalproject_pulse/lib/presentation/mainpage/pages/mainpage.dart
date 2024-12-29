@@ -96,7 +96,8 @@ class _MainpageState extends State<Mainpage> {
         orElse: () => Product(
           product_id: 0,
           name: '',
-          category: '',
+          category_id: 0,
+          category_desc: '',
           price: 0.0,
           expiredDate: '',
           barcode: '',

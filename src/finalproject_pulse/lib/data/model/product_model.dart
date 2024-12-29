@@ -1,7 +1,8 @@
 class Product {
   final int product_id;
   final String name;
-  final String category;
+  final int category_id;
+  final String category_desc;
   final double price;
   final String expiredDate;
   final String barcode;
@@ -14,7 +15,8 @@ class Product {
   Product({
     required this.product_id,
     required this.name,
-    required this.category,
+    required this.category_id,
+    required this.category_desc,
     required this.price,
     required this.expiredDate,
     required this.barcode,
@@ -29,7 +31,8 @@ class Product {
   Product copyWith({
     int? product_id,
     String? name,
-    String? category,
+    int? category_id,
+    String? category_desc,
     double? price,
     String? expiredDate,
     String? barcode,
@@ -42,7 +45,8 @@ class Product {
     return Product(
       product_id: product_id ?? this.product_id,
       name: name ?? this.name,
-      category: category ?? this.category,
+      category_id: category_id ?? this.category_id,
+      category_desc: category_desc ?? this.category_desc,
       price: price ?? this.price,
       expiredDate: expiredDate ?? this.expiredDate,
       barcode: barcode ?? this.barcode,
@@ -59,7 +63,8 @@ class Product {
     return Product(
       product_id: json['product_id'],
       name: json['product_name'],
-      category: json['description'],
+      category_id: json['category_id'],
+      category_desc: json['description'],
       price: json['unit_price'],
       expiredDate: json['expired_date'].toString(),
       barcode: json['barcode'].toString(),
@@ -74,7 +79,7 @@ class Product {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'category': category,
+      'category_id': category_id,
       'price': price,
       'expiredDate': expiredDate,
       'barcode': barcode,
