@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Category ID</title>
+</head>
+<body>
+    <h1>Find Category ID</h1>
+    <form id="categoryForm" method="POST" action="http://localhost/flutter/api/getCategoryId.php">
+        <label for="description">Category Description:</label><br>
+        <input type="text" id="description" name="description" required>
+        <br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Result:</h2>
+    <pre id="result"></pre>
+
+    <script>
+        const form = document.getElementById('categoryForm');
+        const resultContainer = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+                resultContainer.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultContainer.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
